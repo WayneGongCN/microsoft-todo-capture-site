@@ -38,7 +38,7 @@ function readPreference() {
 
 /** 只在主动同意后初始化 Google 标签，避免未授权的统计请求，喵~ */
 function loadAnalytics() {
-  if (!enabled || !permitted) return;
+  if (!enabled || !permitted || navigator.globalPrivacyControl) return;
   window[`ga-disable-${measurementId}`] = false;
   if (!initialized) {
     initialized = true;
@@ -64,6 +64,7 @@ function loadAnalytics() {
 /** 撤回统计时禁用后续事件并清理本站 Google Analytics Cookie，喵~ */
 function stopAnalytics() {
   window[`ga-disable-${measurementId}`] = true;
+  if (initialized) window.gtag('consent', 'update', { analytics_storage: 'denied' });
   for (const entry of document.cookie.split(';')) {
     const key = entry.split('=')[0].trim();
     if (key === '_ga' || key.startsWith('_ga_')) {
@@ -85,14 +86,14 @@ export function initAnalytics() {
   measurementId = document.documentElement.dataset.analyticsId ?? '';
   enabled = location.hostname === document.documentElement.dataset.analyticsHost && /^G-[A-Z0-9]+$/.test(measurementId);
   const banner = document.querySelector('[data-consent]');
-  if (!enabled) {
+  if (!enabled || navigator.globalPrivacyControl) {
+    if (enabled) stopAnalytics();
     document.querySelectorAll('[data-analytics-preferences]').forEach(button => { button.hidden = true; });
     return;
   }
   document.querySelector('[data-consent-allow]').addEventListener('click', () => setConsent(true));
   document.querySelector('[data-consent-deny]').addEventListener('click', () => setConsent(false));
   document.querySelectorAll('[data-analytics-preferences]').forEach(button => button.addEventListener('click', () => { banner.hidden = false; banner.querySelector('[data-consent-deny]').focus(); }));
-  if (navigator.globalPrivacyControl) { permitted = false; stopAnalytics(); return; }
   const preference = readPreference();
   permitted = preference === 'granted';
   banner.hidden = preference === 'granted' || preference === 'denied';

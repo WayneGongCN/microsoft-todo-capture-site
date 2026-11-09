@@ -68,7 +68,13 @@ Every interaction also includes `site_language`, `page_type` and a cleaned page 
 
 Custom parameters must be registered as event-scoped dimensions in GA4 to use them in standard explorations: `site_language`, `page_type`, `capture_type`, `cta_location`, `faq_id`, `target_language`. Registration requires Analytics Editor access and an edit-scoped OAuth connection. Event collection and event-name reports work without dimension registration. Do not mark `demo_complete` as an installation conversion.
 
-For DebugView, a consented production visit may use `?analytics_debug=1`; this parameter is stripped from the reported page address. Browser test fixtures intercept Google requests so CI does not add real traffic. The existing stream’s automatic enhanced-measurement settings should be checked when changing navigation behavior to avoid history-based duplicate page views.
+For DebugView, a consented production visit may use `?analytics_debug=1`; this parameter is stripped from the reported page address. Browser test fixtures intercept Google requests so CI does not add real traffic. Keep automatic page history, site search and other enhanced events disabled in the website data stream. The site defines its own page views and interactions.
+
+### Extension events
+
+The Vercel function at `/api/extension-analytics/` accepts opt-in events from the extension and forwards them to GA4 property `385775162`, stream `5470384182` (`G-Q2114CB24F`). Set `GA_EXTENSION_API_SECRET` as a sensitive Vercel environment variable for this project. Generate it in that stream’s Measurement Protocol API secrets settings. Use the store extension origin in production and the development extension origin in Preview. An unconfigured function returns 503.
+
+The relay forwards `extension_open` (with `surface`) and `task_created`, the extension version, a random client ID, and the session ID. It validates the event and discards additional fields before sending anything to GA4.
 
 ## License
 
