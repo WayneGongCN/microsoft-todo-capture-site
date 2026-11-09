@@ -52,7 +52,7 @@ export const content = {
     finalEyebrow: 'LESS TO REMEMBER. MORE TO DO.', finalHeading: 'Give a good idea<br>a place to go.',
     finalText: 'The next chapter is open source. Follow along as To Do Capture takes shape.',
     footerText: 'An independent companion for Microsoft To Do.', privacy: 'Privacy', analytics: 'Analytics preferences', websiteSource: 'Website source',
-    reward: 'Support the project',
+    reward: 'Support',
     consentTitle: 'A little insight helps.', consentText: 'Allow optional Google Analytics to understand which parts of this site are useful? The demo works either way.', allow: 'Allow analytics', deny: 'No thanks', consentAria: 'Optional website analytics',
     privacyTitle: 'Privacy policy', privacyDescription: 'How To Do Capture handles data in its Chrome extension and on this website.',
     privacyIntro: 'This policy covers the To Do Capture Chrome extension and its website.',

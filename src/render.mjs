@@ -8,7 +8,7 @@ export function escapeHtml(value) {
 
 /** 输出站点使用的少量矢量图标，避免图标字体与额外网络请求，喵~ */
 function icon(name, className = '') {
-  const paths = { arrow: '<path d="M4 12h16m-6-6 6 6-6 6"/>', check: '<path d="m5 12 4 4L19 6"/>', plus: '<path d="M12 5v14M5 12h14"/>', link: '<path d="m10 13 4-4m-6 7-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 10 4-4a4 4 0 0 0-6-6" transform="translate(2 0)"/>', cross: '<path d="m6 6 12 12M6 18 18 6"/>', globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/>', chevron: '<path d="m7 10 5 5 5-5"/>', page: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>', quote: '<path d="M5 10h5v7H4v-6a6 6 0 0 1 4-6m7 5h5v7h-6v-6a6 6 0 0 1 4-6"/>', github: '<path d="M9 19c-4 1-4-2-6-2m12 4v-4a4 4 0 0 0-1-3c3 0 6-1 6-6 0-1-1-3-1-3 0-1 0-2-1-3-2 0-3 1-3 1a12 12 0 0 0-6 0S8 2 6 2C5 3 5 4 5 5c-1 1-1 2-1 3 0 5 3 6 6 6-1 1-1 2-1 3v4"/>' };
+  const paths = { heart: '<path d="M20.8 8.6c0 4.4-8.8 10.7-8.8 10.7S3.2 13 3.2 8.6a4.4 4.4 0 0 1 8.8 0 4.4 4.4 0 0 1 8.8 0Z"/>', arrow: '<path d="M4 12h16m-6-6 6 6-6 6"/>', check: '<path d="m5 12 4 4L19 6"/>', plus: '<path d="M12 5v14M5 12h14"/>', link: '<path d="m10 13 4-4m-6 7-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 10 4-4a4 4 0 0 0-6-6" transform="translate(2 0)"/>', cross: '<path d="m6 6 12 12M6 18 18 6"/>', globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/>', chevron: '<path d="m7 10 5 5 5-5"/>', page: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>', quote: '<path d="M5 10h5v7H4v-6a6 6 0 0 1 4-6m7 5h5v7h-6v-6a6 6 0 0 1 4-6"/>', github: '<path d="M9 19c-4 1-4-2-6-2m12 4v-4a4 4 0 0 0-1-3c3 0 6-1 6-6 0-1-1-3-1-3 0-1 0-2-1-3-2 0-3 1-3 1a12 12 0 0 0-6 0S8 2 6 2C5 3 5 4 5 5c-1 1-1 2-1 3 0 5 3 6 6 6-1 1-1 2-1 3v4"/>' };
   return `<svg class="icon ${className}" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] ?? paths.arrow}</svg>`;
 }
 
@@ -23,7 +23,13 @@ function header(c, privacy = false) {
   const other = privacy ? (c.lang === 'en' ? '/zh/privacy/' : '/privacy/') : c.other;
   return `<a class="skip-link" href="#main">${c.lang === 'en' ? 'Skip to content' : '跳到正文'}</a>
   <header class="site-header wrap"><a class="brand" href="${root}" aria-label="To Do Capture home">${logo()}<span>To Do Capture</span></a>
-    <nav aria-label="${c.lang === 'en' ? 'Main navigation' : '主导航'}"><a class="nav-section" href="${root}#idea">${c.nav[0]}</a><a class="nav-section" href="${root}#questions">${c.nav[2]}</a><a class="language" href="${other}" lang="${c.lang === 'en' ? 'zh-CN' : 'en'}" data-track="language_switch" data-track-value="${c.lang === 'en' ? 'zh' : 'en'}">${icon('globe')}${c.otherLabel}</a><a class="nav-source" href="${site.repository}" data-track="project_click" data-track-value="header">GitHub ${icon('arrow')}</a></nav>
+    <nav aria-label="${c.lang === 'en' ? 'Main navigation' : '主导航'}">
+      <a class="nav-section" href="${root}#idea">${c.nav[0]}</a>
+      <a class="nav-section" href="${root}#questions">${c.nav[2]}</a>
+      <a class="language" href="${other}" lang="${c.lang === 'en' ? 'zh-CN' : 'en'}" data-track="language_switch" data-track-value="${c.lang === 'en' ? 'zh' : 'en'}">${icon('globe')}${c.otherLabel}</a>
+      <a class="nav-source" href="${site.repository}" data-track="project_click" data-track-value="header">GitHub ${icon('arrow')}</a>
+      <a class="nav-reward" href="${escapeHtml(site.rewardUrl)}" target="_blank" rel="noreferrer">${icon('heart')}${c.reward}</a>
+    </nav>
   </header>`;
 }
 
@@ -34,7 +40,6 @@ function footer(c) {
       <a class="brand" href="${c.path}">${logo()}<span>To Do Capture</span></a>
       <p>${c.footerText}</p>
       <small>${c.lang === 'en' ? 'Not affiliated with or endorsed by Microsoft.' : '非微软官方项目，与微软无隶属或背书关系。'}</small>
-      <a class="button button-quiet button-small" href="${escapeHtml(site.rewardUrl)}" target="_blank" rel="noreferrer">${c.reward} ${icon('arrow')}</a>
     </div>
     <nav aria-label="${c.lang === 'en' ? 'Footer' : '页脚'}"><a href="${c.lang === 'en' ? '/privacy/' : '/zh/privacy/'}">${c.privacy}</a><button type="button" data-analytics-preferences>${c.analytics}</button><a href="${site.websiteRepository}" data-track="website_source_click" data-track-value="footer">${c.websiteSource} ${icon('arrow')}</a></nav>
     <span class="copyright">© 2026 waynegong</span>
