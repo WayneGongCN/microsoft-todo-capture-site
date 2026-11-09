@@ -29,7 +29,16 @@ function header(c, privacy = false) {
 
 /** 页脚提供项目归属和可随时调整的统计偏好，喵~ */
 function footer(c) {
-  return `<footer class="site-footer wrap"><div><a class="brand" href="${c.path}">${logo()}<span>To Do Capture</span></a><p>${c.footerText}</p><small>${c.lang === 'en' ? 'Not affiliated with or endorsed by Microsoft.' : '非微软官方项目，与微软无隶属或背书关系。'}</small></div><nav aria-label="${c.lang === 'en' ? 'Footer' : '页脚'}"><a href="${c.lang === 'en' ? '/privacy/' : '/zh/privacy/'}">${c.privacy}</a><button type="button" data-analytics-preferences>${c.analytics}</button><a href="${site.websiteRepository}" data-track="website_source_click" data-track-value="footer">${c.websiteSource} ${icon('arrow')}</a></nav><span class="copyright">© 2026 waynegong</span></footer>
+  return `<footer class="site-footer wrap">
+    <div>
+      <a class="brand" href="${c.path}">${logo()}<span>To Do Capture</span></a>
+      <p>${c.footerText}</p>
+      <small>${c.lang === 'en' ? 'Not affiliated with or endorsed by Microsoft.' : '非微软官方项目，与微软无隶属或背书关系。'}</small>
+      <a class="button button-quiet button-small" href="${escapeHtml(site.rewardUrl)}" target="_blank" rel="noreferrer">${c.reward} ${icon('arrow')}</a>
+    </div>
+    <nav aria-label="${c.lang === 'en' ? 'Footer' : '页脚'}"><a href="${c.lang === 'en' ? '/privacy/' : '/zh/privacy/'}">${c.privacy}</a><button type="button" data-analytics-preferences>${c.analytics}</button><a href="${site.websiteRepository}" data-track="website_source_click" data-track-value="footer">${c.websiteSource} ${icon('arrow')}</a></nav>
+    <span class="copyright">© 2026 waynegong</span>
+  </footer>
   <aside class="consent" aria-label="${c.consentAria}" hidden data-consent><div><strong>${c.consentTitle}</strong><p>${c.consentText} <a href="${c.lang === 'en' ? '/privacy/' : '/zh/privacy/'}">${c.privacy}</a></p></div><div class="consent-actions"><button class="button button-small" type="button" data-consent-allow>${c.allow}</button><button class="button button-quiet button-small" type="button" data-consent-deny>${c.deny}</button></div></aside>`;
 }
 
