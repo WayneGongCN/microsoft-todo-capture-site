@@ -86,9 +86,10 @@ test('analytics waits for consent, sends one pageview, filters data and stops af
   expect(JSON.stringify(events)).not.toContain('Explore the focus guide');
   await page.getByRole('button', { name: 'Analytics preferences', exact: true }).click();
   await page.getByRole('button', { name: 'No thanks', exact: true }).click();
-  const count = await page.evaluate(() => window.dataLayer.length);
+  const afterWithdrawal = await page.evaluate(() => window.dataLayer.map(entry => Array.from(entry)));
+  expect(afterWithdrawal.at(-1)).toEqual(['consent', 'update', { analytics_storage: 'denied' }]);
   await page.getByRole('button', { name: 'Webpage', exact: true }).click();
-  expect(await page.evaluate(() => window.dataLayer.length)).toBe(count);
+  expect(await page.evaluate(() => window.dataLayer.length)).toBe(afterWithdrawal.length);
 });
 
 test('Global Privacy Control blocks a previously granted analytics preference', async ({ page }) => {

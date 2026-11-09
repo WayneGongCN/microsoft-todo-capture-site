@@ -43,7 +43,7 @@ Update screenshots from the matching extension build using sample data. Keep the
 
 This site deliberately describes V2 as in development. Its demo uses local sample data and never logs in or creates tasks. No install/download CTA, rating or release date is invented. Update copy in both languages when the extension is verified and released. Keep the extension repository separate from this website.
 
-Vercel builds `main` with `npm run build` and serves `dist/`. `vercel.json` declares the output, security headers and immutable caching for content-fingerprinted assets. Preview builds emit `noindex,nofollow` and a disallowing robots file. Production builds are indexable. When changing the production domain, update `src/config.mjs` and redeploy so the canonical, hreflang, sitemap, Open Graph and analytics host stay consistent.
+Vercel builds the site with `npm run build` and serves `dist/`. `vercel.json` declares the output, security headers and immutable caching for content-fingerprinted assets. Preview builds emit `noindex,nofollow` and a disallowing robots file. Production builds are indexable. When changing the production domain, update `src/config.mjs` and redeploy so the canonical, hreflang, sitemap, Open Graph and analytics host stay consistent.
 
 Routes: `/`, `/zh/`, `/privacy/`, `/zh/privacy/`. Unknown paths return HTTP 404. All main content is present without JavaScript. Reciprocal `en`, `zh-CN` and `x-default` alternates are paired with self-referencing canonicals; schema.org metadata describes the site and the app’s development state. The sitemap contains only real production routes. Search discovery and ranking are controlled by search engines; deployment does not prove index inclusion.
 
@@ -68,7 +68,13 @@ Every interaction also includes `site_language`, `page_type` and a cleaned page 
 
 Custom parameters must be registered as event-scoped dimensions in GA4 to use them in standard explorations: `site_language`, `page_type`, `capture_type`, `cta_location`, `faq_id`, `target_language`. Registration requires Analytics Editor access and an edit-scoped OAuth connection. Event collection and event-name reports work without dimension registration. Do not mark `demo_complete` as an installation conversion.
 
-For DebugView, a consented production visit may use `?analytics_debug=1`; this parameter is stripped from the reported page address. Browser test fixtures intercept Google requests so CI does not add real traffic. The existing stream’s automatic enhanced-measurement settings should be checked when changing navigation behavior to avoid history-based duplicate page views.
+For DebugView, a consented production visit may use `?analytics_debug=1`; this parameter is stripped from the reported page address. Browser test fixtures intercept Google requests so CI does not add real traffic. Keep automatic page history, site search and other enhanced events disabled in the website data stream. The site defines its own page views and interactions.
+
+### Extension events
+
+The Vercel function at `/api/extension-analytics/` accepts opt-in events from the extension and forwards them to GA4 property `385775162`, stream `5470384182` (`G-Q2114CB24F`). Set `GA_EXTENSION_API_SECRET` as a sensitive Vercel environment variable for this project. Generate it in that stream’s Measurement Protocol API secrets settings. The function accepts the store extension origin in production and the development extension origin in Preview. To use a branch-scoped Preview secret, deploy that Git branch. An unconfigured function returns 503.
+
+The relay forwards `extension_open` (with `surface`) and `task_created`, the extension version, a random client ID, and the session ID. It validates the event and discards additional fields before sending anything to GA4.
 
 ## License
 
