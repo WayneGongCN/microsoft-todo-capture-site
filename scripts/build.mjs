@@ -23,8 +23,15 @@ function finalize(html) {
   return isPreview ? rendered.replace('index,follow,max-image-preview:large', 'noindex,nofollow') : rendered;
 }
 
+const homepage = finalize(renderHome('en'));
+const productionHomepage = process.env.VERCEL_ENV === 'production'
+  ? homepage.replace('</head>', `<meta name="google-site-verification" content="eYsxWjySciEsxiEG4SSBbKE7bfUw2b8333Xmwy-JADk">
+<meta name="msvalidate.01" content="22F810F68D8754848FD08A7BE4E77892">
+</head>`)
+  : homepage;
+
 await Promise.all([
-  writeFile('dist/index.html', finalize(renderHome('en'))),
+  writeFile('dist/index.html', productionHomepage),
   writeFile('dist/zh/index.html', finalize(renderHome('zh'))),
   writeFile('dist/privacy/index.html', finalize(renderPrivacy('en'))),
   writeFile('dist/zh/privacy/index.html', finalize(renderPrivacy('zh'))),

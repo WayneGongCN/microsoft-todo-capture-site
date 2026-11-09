@@ -47,6 +47,8 @@ Vercel builds the site with `npm run build` and serves `dist/`. `vercel.json` de
 
 Routes: `/`, `/zh/`, `/privacy/`, `/zh/privacy/`. Unknown paths return HTTP 404. All main content is present without JavaScript. Reciprocal `en`, `zh-CN` and `x-default` alternates are paired with self-referencing canonicals; schema.org metadata describes the site and the app’s development state. The sitemap contains only real production routes. Search discovery and ranking are controlled by search engines; deployment does not prove index inclusion.
 
+The Vercel production homepage publishes the ownership tags for Google Search Console and Bing Webmaster Tools. Keep both tags in `scripts/build.mjs` for ongoing verification. If the production hostname changes, verify the new site and submit its `/sitemap.xml` in both consoles.
+
 ## Analytics
 
 The original homepage stream is retained: GA4 property `298798570`, stream `3193804945`, measurement ID `G-QR2Z39S77X`. It is distinct from the extension’s own GA resource.
