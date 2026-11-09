@@ -13,7 +13,8 @@
     "dev": "node scripts/serve.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "playwright test",
-    "check": "npm run build && npm test && npm run test:browser"
+    "check": "npm run build && npm test && npm run test:browser",
+    "store:assets": "node scripts/generate-store-assets.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.11.1",

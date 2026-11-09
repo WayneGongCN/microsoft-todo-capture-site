@@ -23,6 +23,22 @@ npm run check
 
 Checks cover static SEO metadata, localized content, analytics data filtering, the interactive demo, narrow layouts, accessibility, consent and Global Privacy Control. `node scripts/generate-og.mjs` regenerates the committed 1200 × 630 sharing image.
 
+## Chrome Web Store assets
+
+Use [`store-assets/`](store-assets/) as the source for store listing uploads and extension icons. The storefront uses one set of promotional images and can display screenshots by manifest locale. See [Chrome Web Store image guidelines](https://developer.chrome.com/docs/webstore/images).
+
+| Dashboard field | File | Size |
+| --- | --- | --- |
+| Store icon | [todo-128.png](store-assets/icons/todo-128.png) | 128 × 128 |
+| Small promo tile | [small-tile.png](store-assets/promotional/small-tile.png) | 440 × 280 |
+| Marquee promo tile | [marquee.png](store-assets/promotional/marquee.png) | 1400 × 560 |
+| Global screenshots | [English capture and settings](store-assets/screenshots/en/) | 1280 × 800 |
+| Localized screenshots for Simplified Chinese | [`zh_CN` capture](store-assets/screenshots/zh_CN/) | 1280 × 800 |
+
+The canonical brand mark is [`public/favicon.svg`](public/favicon.svg). Run `npm run store:assets` after changing the mark or the promotional layout in [`scripts/generate-store-assets.mjs`](scripts/generate-store-assets.mjs). The command uses Playwright Chromium and refreshes the 16, 24, 32, 48 and 128 px extension icons and both promo tiles. The 128 px export contains a 96 px mark with 16 px transparent padding on each side.
+
+Update screenshots from the matching extension build using sample data. Keep them in display order by filename and export them as 24-bit RGB PNGs. The current screenshots show the capture and settings UI in the 2.0.1 release candidate. Store uploads use the files from this directory, which lives outside the website's public build.
+
 ## Product state and publication
 
 This site deliberately describes V2 as in development. Its demo uses local sample data and never logs in or creates tasks. No install/download CTA, rating or release date is invented. Update copy in both languages when the extension is verified and released. Keep the extension repository separate from this website.
