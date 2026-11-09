@@ -21,10 +21,13 @@ for (const locale of ['en', 'zh']) {
     assert.ok(html.includes(content[locale].statusText));
     assert.ok(!html.includes('chromewebstore.google.com'));
   });
-  test(`${locale}: website privacy is localized and separate from extension claims`, () => {
+  test(`${locale}: privacy policy covers the extension and website analytics`, () => {
     const html = renderPrivacy(locale);
     assert.ok(html.includes(content[locale].privacyIntro));
     assert.ok(html.includes(site.measurementId));
+    assert.ok(html.includes('Microsoft Graph'));
+    assert.ok(html.includes('Limited Use'));
+    assert.ok(html.includes(`href="${site.repository}/issues"`));
     assert.equal((html.match(/<h1>/g) ?? []).length, 1);
   });
 }

@@ -76,10 +76,26 @@ export function renderHome(locale) {
   return document(c, body);
 }
 
-/** 发布网站自身的数据处理说明，避免冒用未验证的扩展隐私承诺，喵~ */
+/** 在同一隐私页公开扩展数据用途、网站统计说明和支持入口，喵~ */
 export function renderPrivacy(locale) {
   const c = content[locale];
-  return document(c, `<main class="privacy-page wrap" id="main"><a class="back-link" href="${c.path}">← ${c.back}</a><p class="eyebrow">TO DO CAPTURE / PRIVACY</p><h1>${c.privacyTitle}</h1><p class="privacy-intro">${c.privacyIntro}</p>${c.privacySections.map(([title, paragraph]) => `<section><h2>${title}</h2><p>${paragraph}</p></section>`).join('')}<section><h2>${c.policyLinks}</h2><ul><li><a href="https://policies.google.com/privacy">Google Privacy Policy</a></li><li><a href="https://vercel.com/legal/privacy-policy">Vercel Privacy Policy</a></li><li><a href="${site.websiteRepository}/issues">${c.websiteSource} / Issues</a></li></ul></section></main>`, 'privacy');
+  const sections = c.privacySections.map(([title, paragraph]) =>
+    `<section><h2>${escapeHtml(title)}</h2><p>${escapeHtml(paragraph)}</p></section>`,
+  ).join('');
+  return document(c, `<main class="privacy-page wrap" id="main">
+    <a class="back-link" href="${c.path}">← ${c.back}</a>
+    <p class="eyebrow">TO DO CAPTURE / PRIVACY</p>
+    <h1>${c.privacyTitle}</h1>
+    <p class="privacy-intro">${c.privacyIntro}</p>
+    ${sections}
+    <section><h2>${c.policyLinks}</h2><ul>
+      <li><a href="${site.repository}/issues">${c.extensionSupport}</a></li>
+      <li><a href="https://developer.chrome.com/docs/webstore/program-policies/limited-use">Chrome Web Store Limited Use</a></li>
+      <li><a href="https://policies.google.com/privacy">Google Privacy Policy</a></li>
+      <li><a href="https://vercel.com/legal/privacy-policy">Vercel Privacy Policy</a></li>
+      <li><a href="${site.websiteRepository}/issues">${c.websiteSource} / Issues</a></li>
+    </ul></section>
+  </main>`, 'privacy');
 }
 
 /** 让未知路径真实返回找不到页面，同时提供可用的返回入口，喵~ */
