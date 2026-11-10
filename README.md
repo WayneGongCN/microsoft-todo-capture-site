@@ -41,11 +41,11 @@ Update screenshots from the matching extension build using sample data. Keep the
 
 ## Product state and publication
 
-This site deliberately describes V2 as in development. Its demo uses local sample data and never logs in or creates tasks. No install/download CTA, rating or release date is invented. Update copy in both languages when the extension is verified and released. Keep the extension repository separate from this website.
+The English and Chinese homepages link to the Chrome Web Store listing. Update `extensionVersion` in `src/config.mjs` after verifying a new store release. The site demo uses local sample data and never logs in or creates tasks.
 
 Vercel builds the site with `npm run build` and serves `dist/`. `vercel.json` declares the output, security headers and immutable caching for content-fingerprinted assets. Preview builds emit `noindex,nofollow` and a disallowing robots file. Production builds are indexable. When changing the production domain, update `src/config.mjs` and redeploy so the canonical, hreflang, sitemap, Open Graph and analytics host stay consistent.
 
-Routes: `/`, `/zh/`, `/privacy/`, `/zh/privacy/`. Unknown paths return HTTP 404. All main content is present without JavaScript. Reciprocal `en`, `zh-CN` and `x-default` alternates are paired with self-referencing canonicals; schema.org metadata describes the site and the app’s development state. The sitemap contains only real production routes. Search discovery and ranking are controlled by search engines; deployment does not prove index inclusion.
+Routes: `/`, `/zh/`, `/privacy/`, `/zh/privacy/`. Unknown paths return HTTP 404. All main content is present without JavaScript. Reciprocal `en`, `zh-CN` and `x-default` alternates are paired with self-referencing canonicals. Schema.org metadata includes the extension version and installation URL. The sitemap contains only real production routes. Search discovery and ranking are controlled by search engines; deployment does not prove index inclusion.
 
 The Vercel production homepage publishes the Google Search Console ownership tag. Keep it in `scripts/build.mjs` for ongoing verification. Bing Webmaster Tools imports the verified site and its sitemap through the existing Search Console connection. If the production hostname changes, verify the new URL-prefix property, submit its `/sitemap.xml`, and import the new property into Bing.
 
