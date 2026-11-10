@@ -1,8 +1,8 @@
 export const content = {
   en: {
     lang: 'en', path: '/', other: '/zh/', otherLabel: '中文',
-    title: 'To Do Capture — Microsoft To Do Chrome Extension',
-    description: 'Turn webpages, selected text and links into Microsoft To Do tasks. Meet the next version of the independent, open-source Chrome extension.',
+    title: 'Microsoft To Do Chrome Extension | To Do Capture',
+    description: 'Save webpages, selected text, and links to Microsoft To Do with To Do Capture, an independent, open-source Chrome extension. Choose a list and keep browsing.',
     nav: ['The idea', 'Try the demo', 'Questions'],
     follow: 'Follow the rebuild', source: 'View on GitHub',
     eyebrow: 'A CHROME EXTENSION FOR MICROSOFT TO DO',
@@ -73,8 +73,8 @@ export const content = {
   },
   zh: {
     lang: 'zh-CN', path: '/zh/', other: '/', otherLabel: 'EN',
-    title: 'To Do Capture — Microsoft To Do 微软待办 Chrome 扩展',
-    description: '把网页、选中文字和链接快速收进 Microsoft To Do 微软待办。了解独立开源 Chrome 扩展 To Do Capture 的新版设计与开发进展。',
+    title: 'Microsoft To Do Chrome 扩展 | To Do Capture',
+    description: 'To Do Capture 是适用于 Microsoft To Do（微软待办）的独立开源 Chrome 扩展。浏览时可把网页、选中文字和链接保存为待办，并选择要保存到的清单。',
     nav: ['为什么做它', '体验演示', '常见问题'],
     follow: '关注新版进展', source: '在 GitHub 查看',
     eyebrow: '为 MICROSOFT TO DO 而做的 CHROME 扩展',
