@@ -22,7 +22,7 @@
   .feature-illustration {
     display:block;
     width:100%;
-    height:clamp(92px,10vw,116px);
+    height:clamp(122px,11vw,146px);
     margin-top:14px;
     border:1px solid #e1e6e4;
     border-radius:8px;
@@ -40,6 +40,7 @@
 @layer responsive {
   @media (max-width:760px) {
     .wrap { width:calc(100% - 40px); }
+    .capture-types { grid-template-columns:1fr; gap:18px; }
     .site-header { height:78px; }
     .site-header nav { gap:19px; }
     .site-footer { margin-top:40px; }
@@ -49,7 +50,6 @@
     .privacy-page .privacy-intro { font-size:15px; }
   }
   @media (max-width:600px) {
-    .capture-types { grid-template-columns:1fr; gap:18px; }
     .hero-intro { font-size:15px; }
   }
   @media (max-width:420px) {

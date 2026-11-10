@@ -70,28 +70,44 @@ function document(c, body, kind = 'home') {
 </head><body>${header(c, kind === 'privacy')}${body}${footer(c)}</body></html>`;
 }
 
-/** 用同一张浏览器和待办卡片线框图展示三种收集对象，喵~ */
-function captureIllustration(kind) {
-  const highlight = {
-    page: `<rect x="20" y="17" width="104" height="66" rx="7" stroke="currentColor"/>
-      <rect x="33" y="43" width="25" height="27" rx="3" fill="#e6eeff" stroke="none"/>
-      <path d="M66 45h42m-42 11h34m-34 11h26"/>`,
-    selection: `<path d="M33 43h74M33 69h52"/>
-      <rect x="30" y="49" width="79" height="14" rx="3" fill="#dce7ff" stroke="none"/>
-      <path d="M35 56h69" stroke="currentColor"/>`,
-    link: `<path d="M33 43h65M33 70h40"/>
-      <path d="M33 54h48m-48 4h48" stroke="currentColor"/>
-      <path d="m87 54 15 10-7 1 4 7-4 2-4-7-4 4Z" fill="#dce7ff" stroke="currentColor"/>`,
+/** 在线框浏览器内画出右键菜单和工具栏弹窗，喵~ */
+function captureIllustration(kind, copy) {
+  const source = {
+    page: `<rect x="25" y="40" width="125" height="66" rx="5" stroke="currentColor"/>
+      <rect x="34" y="57" width="35" height="35" rx="3" fill="#e6eeff" stroke="none"/>
+      <path d="M34 49h70M79 60h60m-60 10h48m-48 10h52m-52 10h36"/>`,
+    selection: `<path d="M32 42h98"/>
+      <rect x="29" y="47" width="94" height="13" rx="3" fill="#dce7ff" stroke="none"/>
+      <path d="M34 53h83" stroke="currentColor"/>`,
+    link: `<path d="M32 42h98"/>
+      <path d="M33 51h85m-85 5h85" stroke="currentColor"/>`,
   };
+  const menu = kind === 'page' ? '' : `<rect x="24" y="61" width="132" height="46" rx="4" fill="#fff" stroke="#8292a3"/>
+    <rect x="28" y="78" width="124" height="18" rx="3" fill="#e6eeff" stroke="none"/>
+    <path d="M33 101h57"/>
+    <text x="33" y="73" fill="#52616e" stroke="none" font-size="9.5">${escapeHtml(copy.menuLabel)}</text>
+    <text x="33" y="90" fill="#174abf" stroke="none" font-size="9" font-weight="600">${escapeHtml(copy[kind])}</text>
+    <path d="m117 52 13 9-6 1 4 6-3 2-4-6-4 3Z" fill="#fff" stroke="currentColor"/>
+    <path d="M159 86h8m-4-4 4 4-4 4" stroke="currentColor"/>`;
 
-  return `<svg class="feature-illustration" viewBox="0 0 280 100" fill="none" stroke="#a8b4bf" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-    <rect x="20" y="17" width="104" height="66" rx="7" fill="#fff"/>
-    <path d="M20 32h104M31 25h1m6 0h1m6 0h1"/>
-    ${highlight[kind]}
-    <path d="M136 50h25m-6-6 6 6-6 6" stroke="currentColor"/>
-    <rect x="174" y="27" width="86" height="46" rx="7" fill="#fff"/>
-    <rect x="185" y="38" width="12" height="12" rx="2" stroke="currentColor"/>
-    <path d="M205 41h42m-42 8h31m-31 9h22"/>
+  return `<svg class="feature-illustration" viewBox="0 0 300 128" fill="none" stroke="#a8b4bf" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="12" y="10" width="276" height="108" rx="8" fill="#fff"/>
+    <path d="M12 30h276M23 20h1m6 0h1m6 0h1"/>
+    <rect x="48" y="16" width="177" height="8" rx="4" fill="#eef1f4" stroke="none"/>
+    <rect x="258" y="14" width="14" height="13" rx="3" fill="#e6eeff" stroke="currentColor"/>
+    <path d="m261 20 3 3 5-5" stroke="currentColor"/>
+    ${source[kind]}
+    ${menu}
+    <path d="M176 36h83l6-5 6 5h1a5 5 0 0 1 5 5v62a5 5 0 0 1-5 5h-96a5 5 0 0 1-5-5V41a5 5 0 0 1 5-5Z" fill="#fff" stroke="#6780ab"/>
+    <rect x="178" y="42" width="10" height="10" rx="2" fill="#e6eeff" stroke="none"/>
+    <path d="m180 47 2 2 4-4" stroke="currentColor"/>
+    <text x="193" y="50" fill="#202721" stroke="none" font-size="10" font-weight="600">To Do Capture</text>
+    <rect x="178" y="57" width="92" height="13" rx="3" fill="#f4f6f8" stroke="none"/>
+    <path d="M183 63.5h55"/>
+    <rect x="178" y="75" width="92" height="10" rx="2"/>
+    <path d="M183 80h30m47-2 2 2 2-2"/>
+    <rect x="213" y="90" width="57" height="12" rx="3" fill="#e6eeff" stroke="none"/>
+    <text x="241.5" y="99" fill="#174abf" stroke="none" font-size="8.5" font-weight="600" text-anchor="middle">${escapeHtml(copy.addTask)}</text>
   </svg>`;
 }
 
@@ -111,7 +127,7 @@ export function renderHome(locale) {
       ${c.features.map(([kind, title, description]) => `<article>
         <h2>${title}</h2>
         <p>${description}</p>
-        ${captureIllustration(kind)}
+        ${captureIllustration(kind, c.illustration)}
       </article>`).join('')}
     </section>
   </main>`;
