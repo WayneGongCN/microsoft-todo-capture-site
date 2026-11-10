@@ -9,6 +9,12 @@ export const content = {
     intro: 'Turn webpages, selected text, and links into tasks. Choose a list, add a note, or set a reminder before saving.',
     install: 'Add to Chrome', status: `Version ${site.extensionVersion} is live`,
     featuresLabel: 'Key features',
+    illustration: {
+      menuLabel: 'Right-click menu',
+      selection: 'Save selection to To Do',
+      link: 'Save this link to To Do',
+      addTask: 'Add task',
+    },
     features: [
       ['page', 'Save a webpage', 'Open the extension to create a task with the current page’s title and link.'],
       ['selection', 'Save selected text', 'Right-click a selection to save it in the task notes with a link back to the page.'],
@@ -41,6 +47,12 @@ export const content = {
     intro: '把网页、选中的文字和链接存成待办。保存前可选择清单、添加备注或设置提醒。',
     install: '添加至 Chrome', status: `${site.extensionVersion} 已上线`,
     featuresLabel: '主要功能',
+    illustration: {
+      menuLabel: '右键菜单',
+      selection: '将选中文字保存到 To Do',
+      link: '将此链接保存到 To Do',
+      addTask: '添加任务',
+    },
     features: [
       ['page', '保存网页', '打开扩展，用当前网页的标题和链接创建待办。'],
       ['selection', '保存选中文字', '右键收集选中的文字，把原文片段保存到任务备注，并附上网页链接。'],
