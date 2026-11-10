@@ -43,7 +43,7 @@ function loadAnalytics() {
     window.gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
     window.gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
     window.gtag('js', new Date());
-    window.gtag('config', measurementId, { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false, page_location: cleanPageLocation(location.href), page_referrer: cleanReferrer(document.referrer), cookie_expires: 60 * 60 * 24 * 180, ...(new URL(location.href).searchParams.get('analytics_debug') === '1' ? { debug_mode: true } : {}) });
+    window.gtag('config', measurementId, { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false, page_location: cleanPageLocation(location.href), page_referrer: cleanReferrer(document.referrer), cookie_domain: 'none', cookie_expires: 60 * 60 * 24 * 180, ...(new URL(location.href).searchParams.get('analytics_debug') === '1' ? { debug_mode: true } : {}) });
     const script = document.createElement('script');
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
@@ -80,7 +80,8 @@ function setConsent(allow) {
 /** 初始化生产域名下的可选统计，预览和本地页面默认不产生数据，喵~ */
 export function initAnalytics() {
   measurementId = document.documentElement.dataset.analyticsId ?? '';
-  enabled = location.hostname === document.documentElement.dataset.analyticsHost && /^G-[A-Z0-9]+$/.test(measurementId);
+  const hosts = document.documentElement.dataset.analyticsHosts?.split(',') ?? [];
+  enabled = hosts.includes(location.hostname) && /^G-[A-Z0-9]+$/.test(measurementId);
   const banner = document.querySelector('[data-consent]');
   if (!enabled || navigator.globalPrivacyControl) {
     if (enabled) stopAnalytics();
