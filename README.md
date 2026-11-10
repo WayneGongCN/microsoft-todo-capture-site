@@ -2,7 +2,7 @@
 
 Independent bilingual homepage for the [Microsoft To Do browser extension](https://github.com/WayneGongCN/microsoft-todo-browser-ext).
 
-Production: **https://microsoft-todo-capture-site.vercel.app**
+Production: **https://todo-ext.waynegong.com**
 
 ## Development
 
@@ -53,7 +53,7 @@ The Vercel production homepage publishes the Google Search Console ownership tag
 
 The original homepage stream is retained: GA4 property `298798570`, stream `3193804945`, measurement ID `G-QR2Z39S77X`. It is distinct from the extension’s own GA resource.
 
-Analytics load only after opt-in on the configured production hostname. Preview/local visits do not collect. Global Privacy Control overrides a previous opt-in. Visitors can withdraw from the footer. Advertising features are disabled. Manual page views are sent once per page; analytics URLs exclude query strings/fragments and referrers contain only the origin.
+Analytics load only after opt-in on the custom domain and the original Vercel hostname. Preview/local visits do not collect. Global Privacy Control overrides a previous opt-in. Visitors can withdraw from the footer. Advertising features are disabled. Manual page views are sent once per page; analytics URLs exclude query strings/fragments and referrers contain only the origin.
 
 | Event | Parameters | Meaning |
 | --- | --- | --- |

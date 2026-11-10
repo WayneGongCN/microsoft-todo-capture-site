@@ -1,6 +1,7 @@
 export const site = {
   name: 'To Do Capture',
-  origin: 'https://microsoft-todo-capture-site.vercel.app',
+  origin: 'https://todo-ext.waynegong.com',
+  legacyHostname: 'microsoft-todo-capture-site.vercel.app',
   extensionVersion: '2.0.2',
   chromeWebStoreUrl: 'https://chromewebstore.google.com/detail/to-do-capture/ffpljgmbiankjaokoefefmkoghcgoodn',
   repository: 'https://github.com/WayneGongCN/microsoft-todo-browser-ext',
