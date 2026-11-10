@@ -21,7 +21,7 @@ npx playwright install chromium
 npm run check
 ```
 
-Checks cover static SEO metadata, localized content, analytics data filtering, the interactive demo, narrow layouts, accessibility, consent and Global Privacy Control. `node scripts/generate-og.mjs` regenerates the committed 1200 × 630 sharing image.
+Checks cover static SEO metadata, localized content, the installation link, narrow layouts, accessibility, consent and Global Privacy Control. `node scripts/generate-og.mjs` regenerates the committed 1200 × 630 sharing image.
 
 ## Chrome Web Store assets
 
@@ -41,7 +41,7 @@ Update screenshots from the matching extension build using sample data. Keep the
 
 ## Product state and publication
 
-The English and Chinese homepages link to the Chrome Web Store listing. Update `extensionVersion` in `src/config.mjs` after verifying a new store release. The site demo uses local sample data and never logs in or creates tasks.
+The English and Chinese homepages describe the three capture modes and link to the Chrome Web Store listing. Update `extensionVersion` in `src/config.mjs` after verifying a new store release.
 
 Vercel builds the site with `npm run build` and serves `dist/`. `vercel.json` declares the output, security headers and immutable caching for content-fingerprinted assets. Preview builds emit `noindex,nofollow` and a disallowing robots file. Production builds are indexable. When changing the production domain, update `src/config.mjs` and redeploy so the canonical, hreflang, sitemap, Open Graph and analytics host stay consistent.
 
@@ -60,15 +60,11 @@ Analytics load only after opt-in on the configured production hostname. Preview/
 | `page_view` | `site_language`, `page_type` | One consented page view |
 | `project_click` | `cta_location` | Interest in the GitHub project, not an installation |
 | `website_source_click` | `cta_location` | Website source click |
-| `demo_open` | `cta_location` | Hero demo link click |
-| `demo_mode_select` | `capture_type` | Page, selection or link preview |
-| `demo_complete` | `capture_type` | Demonstration completed, not a real task saved |
-| `faq_expand` | `faq_id` | One of five predefined FAQ questions opened |
 | `language_switch` | `target_language` | Language navigation |
 
 Every interaction also includes `site_language`, `page_type` and a cleaned page location. Parameters are allowlisted fixed values. No notes, selections, task titles, user IDs or Microsoft account information are sent. No events are replayed from before consent. `_ga` cookies are cleared on withdrawal.
 
-Custom parameters must be registered as event-scoped dimensions in GA4 to use them in standard explorations: `site_language`, `page_type`, `capture_type`, `cta_location`, `faq_id`, `target_language`. Registration requires Analytics Editor access and an edit-scoped OAuth connection. Event collection and event-name reports work without dimension registration. Do not mark `demo_complete` as an installation conversion.
+Custom parameters must be registered as event-scoped dimensions in GA4 to use them in standard explorations: `site_language`, `page_type`, `cta_location`, `target_language`. Registration requires Analytics Editor access and an edit-scoped OAuth connection. Event collection and event-name reports work without dimension registration.
 
 For DebugView, a consented production visit may use `?analytics_debug=1`; this parameter is stripped from the reported page address. Browser test fixtures intercept Google requests so CI does not add real traffic. Keep automatic page history, site search and other enhanced events disabled in the website data stream. The site defines its own page views and interactions.
 

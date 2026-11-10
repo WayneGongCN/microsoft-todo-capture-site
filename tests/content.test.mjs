@@ -38,7 +38,7 @@ test('analytics strips URL query, fragment and referrer paths', () => {
 });
 
 test('analytics accepts predefined events and values only', () => {
-  assert.deepEqual(eventParameters('demo_complete', { capture_type: 'selection', title: 'private', email: 'private@example.com' }), { capture_type: 'selection' });
+  assert.deepEqual(eventParameters('language_switch', { target_language: 'zh', title: 'private', email: 'private@example.com' }), { target_language: 'zh' });
   assert.deepEqual(eventParameters('project_click', { cta_location: 'personal-secret', note: 'private' }), {});
   assert.equal(eventParameters('private_task_created', { title: 'private' }), null);
   assert.equal(eventParameters('__proto__', {}), null);
