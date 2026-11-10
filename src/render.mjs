@@ -11,9 +11,6 @@ function icon(name) {
   const paths = {
     heart: '<path d="M20.8 8.6c0 4.4-8.8 10.7-8.8 10.7S3.2 13 3.2 8.6a4.4 4.4 0 0 1 8.8 0 4.4 4.4 0 0 1 8.8 0Z"/>',
     arrow: '<path d="M4 12h16m-6-6 6 6-6 6"/>',
-    page: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
-    quote: '<path d="M5 10h5v7H4v-6a6 6 0 0 1 4-6m7 5h5v7h-6v-6a6 6 0 0 1 4-6"/>',
-    link: '<path d="m10 13 4-4m-6 7-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 10 4-4a4 4 0 0 0-6-6" transform="translate(2 0)"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/>',
   };
   return `<svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
@@ -73,6 +70,31 @@ function document(c, body, kind = 'home') {
 </head><body>${header(c, kind === 'privacy')}${body}${footer(c)}</body></html>`;
 }
 
+/** 用同一张浏览器和待办卡片线框图展示三种收集对象，喵~ */
+function captureIllustration(kind) {
+  const highlight = {
+    page: `<rect x="20" y="17" width="104" height="66" rx="7" stroke="currentColor"/>
+      <rect x="33" y="43" width="25" height="27" rx="3" fill="#e6eeff" stroke="none"/>
+      <path d="M66 45h42m-42 11h34m-34 11h26"/>`,
+    selection: `<path d="M33 43h74M33 69h52"/>
+      <rect x="30" y="49" width="79" height="14" rx="3" fill="#dce7ff" stroke="none"/>
+      <path d="M35 56h69" stroke="currentColor"/>`,
+    link: `<path d="M33 43h65M33 70h40"/>
+      <path d="M33 54h48m-48 4h48" stroke="currentColor"/>
+      <path d="m87 54 15 10-7 1 4 7-4 2-4-7-4 4Z" fill="#dce7ff" stroke="currentColor"/>`,
+  };
+
+  return `<svg class="feature-illustration" viewBox="0 0 280 100" fill="none" stroke="#a8b4bf" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <rect x="20" y="17" width="104" height="66" rx="7" fill="#fff"/>
+    <path d="M20 32h104M31 25h1m6 0h1m6 0h1"/>
+    ${highlight[kind]}
+    <path d="M136 50h25m-6-6 6 6-6 6" stroke="currentColor"/>
+    <rect x="174" y="27" width="86" height="46" rx="7" fill="#fff"/>
+    <rect x="185" y="38" width="12" height="12" rx="2" stroke="currentColor"/>
+    <path d="M205 41h42m-42 8h31m-31 9h22"/>
+  </svg>`;
+}
+
 /** 输出中英文首页的安装入口和三种收集方式，喵~ */
 export function renderHome(locale) {
   const c = content[locale];
@@ -86,10 +108,10 @@ export function renderHome(locale) {
       </div>
     </section>
     <section class="capture-types wrap" aria-label="${c.featuresLabel}">
-      ${c.features.map(([title, description], i) => `<article>
-        ${icon(['page', 'quote', 'link'][i])}
+      ${c.features.map(([kind, title, description]) => `<article>
         <h2>${title}</h2>
         <p>${description}</p>
+        ${captureIllustration(kind)}
       </article>`).join('')}
     </section>
   </main>`;
