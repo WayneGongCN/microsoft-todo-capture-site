@@ -30,9 +30,14 @@ for (const path of ['/', '/zh/', '/privacy/', '/zh/privacy/']) {
   });
 }
 
-for (const path of ['/', '/zh/']) {
-  test(`${path} passes accessibility checks and has working disclosure`, async ({ page }) => {
+for (const [path, installLabel] of [['/', 'Add to Chrome'], ['/zh/', '添加至 Chrome']]) {
+  test(`${path} has accessible installation links and a working FAQ`, async ({ page }) => {
     await page.goto(path);
+    for (const section of ['.hero-actions', '.final-cta']) {
+      const link = page.locator(section).getByRole('link', { name: installLabel, exact: true });
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute('href', 'https://chromewebstore.google.com/detail/to-do-capture/ffpljgmbiankjaokoefefmkoghcgoodn');
+    }
     await page.locator('[data-faq]').first().locator('summary').click();
     await expect(page.locator('[data-faq]').first()).toHaveAttribute('open', '');
     const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
