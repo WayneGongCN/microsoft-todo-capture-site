@@ -1,11 +1,7 @@
 const schema = {
-  project_click: { cta_location: ['header', 'hero', 'release_note', 'final'] },
+  project_click: { cta_location: ['header'] },
   website_source_click: { cta_location: ['footer'] },
-  demo_open: { cta_location: ['hero'] },
   language_switch: { target_language: ['en', 'zh'] },
-  demo_mode_select: { capture_type: ['page', 'selection', 'link'] },
-  demo_complete: { capture_type: ['page', 'selection', 'link'] },
-  faq_expand: { faq_id: ['question_1', 'question_2', 'question_3', 'question_4', 'question_5'] },
 };
 const preferenceKey = 'tdc_analytics_v1';
 let enabled = false;
