@@ -24,9 +24,12 @@ function finalize(html) {
 }
 
 const homepage = finalize(renderHome('en'));
+const searchConsoleTags = [
+  'eYsxWjySciEsxiEG4SSBbKE7bfUw2b8333Xmwy-JADk', // Original Vercel hostname
+  'Zzgl3Cfgek6ttzuqPmvw62FWowAGBetMxpr4dnYwozc', // todo-ext.waynegong.com
+].map(token => `<meta name="google-site-verification" content="${token}">`).join('\n');
 const productionHomepage = process.env.VERCEL_ENV === 'production'
-  ? homepage.replace('</head>', `<meta name="google-site-verification" content="eYsxWjySciEsxiEG4SSBbKE7bfUw2b8333Xmwy-JADk">
-</head>`)
+  ? homepage.replace('</head>', `${searchConsoleTags}\n</head>`)
   : homepage;
 
 await Promise.all([
