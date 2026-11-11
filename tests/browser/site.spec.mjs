@@ -13,12 +13,24 @@ for (const path of ['/', '/zh/', '/privacy/', '/zh/privacy/']) {
   });
 }
 
-for (const [path, installLabel] of [['/', 'Add to Chrome'], ['/zh/', '添加至 Chrome']]) {
-  test(`${path} presents three capture methods and an accessible install link`, async ({ page }) => {
+const installDestinations = [
+  'https://chromewebstore.google.com/detail/to-do-capture/ffpljgmbiankjaokoefefmkoghcgoodn',
+  'https://microsoftedge.microsoft.com/addons/detail/to-do-capture/mhfmejfcbgojopoeakmglpgmlokpdjjg',
+  'https://github.com/WayneGongCN/microsoft-todo-browser-ext/releases/latest',
+];
+
+for (const [path, installLabels] of [
+  ['/', ['Install from the Chrome Web Store', 'Install from Microsoft Edge Add-ons', 'Download for manual installation']],
+  ['/zh/', ['从 Chrome 应用商店安装', '从 Edge 应用商店安装', '下载手动安装']],
+]) {
+  test(`${path} presents three capture methods and three accessible installation links`, async ({ page }) => {
     await page.goto(path);
-    const link = page.getByRole('main').getByRole('link', { name: installLabel, exact: true });
-    await expect(link).toBeVisible();
-    await expect(link).toHaveAttribute('href', 'https://chromewebstore.google.com/detail/to-do-capture/ffpljgmbiankjaokoefefmkoghcgoodn');
+    const main = page.getByRole('main');
+    for (const [index, label] of installLabels.entries()) {
+      const link = main.getByRole('link', { name: label, exact: true });
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute('href', installDestinations[index]);
+    }
     await expect(page.getByRole('main').getByRole('heading', { level: 2 })).toHaveCount(3);
     const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(result.violations).toEqual([]);
@@ -30,7 +42,7 @@ test('homepage content is available with JavaScript disabled', async ({ browser 
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:4178/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Save webpages to Microsoft To Do');
-  await expect(page.getByRole('link', { name: 'Add to Chrome' })).toBeVisible();
+  await expect(page.getByRole('main').getByRole('link')).toHaveCount(3);
   await expect(page.getByRole('heading', { name: 'Save selected text' })).toBeVisible();
   await context.close();
 });

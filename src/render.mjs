@@ -58,7 +58,7 @@ function document(c, body, kind = 'home') {
   const structured = { '@context': 'https://schema.org', '@graph': [
     { '@type': 'WebSite', '@id': `${site.origin}/#website`, name: site.name, url: site.origin, inLanguage: ['en', 'zh-CN'] },
     { '@type': 'WebPage', '@id': `${canonical}#webpage`, url: canonical, name: title, description, inLanguage: c.lang, isPartOf: { '@id': `${site.origin}/#website` } },
-    ...(kind === 'home' ? [{ '@type': 'SoftwareApplication', '@id': `${site.origin}/#application`, name: site.name, applicationCategory: 'ProductivityApplication', url: site.origin, description: c.description, softwareVersion: site.extensionVersion, installUrl: site.chromeWebStoreUrl, isAccessibleForFree: true, license: 'https://opensource.org/license/mit', sameAs: site.repository, author: { '@type': 'Person', name: 'waynegong', url: 'https://github.com/WayneGongCN' } }] : []),
+    ...(kind === 'home' ? [{ '@type': 'SoftwareApplication', '@id': `${site.origin}/#application`, name: site.name, applicationCategory: 'ProductivityApplication', url: site.origin, description: c.description, installUrl: [site.chromeWebStoreUrl, site.edgeAddonsUrl], isAccessibleForFree: true, license: 'https://opensource.org/license/mit', sameAs: site.repository, author: { '@type': 'Person', name: 'waynegong', url: 'https://github.com/WayneGongCN' } }] : []),
   ] };
   return `<!doctype html>
 <html lang="${c.lang}" data-page="${kind}" data-analytics-id="${site.measurementId}" data-analytics-hosts="${new URL(site.origin).hostname},${site.legacyHostname}">
@@ -119,8 +119,9 @@ export function renderHome(locale) {
       <h1>${c.heading}</h1>
       <p class="hero-intro">${c.intro}</p>
       <div class="hero-actions">
-        <a class="button" href="${site.chromeWebStoreUrl}">${c.install}${icon('arrow')}</a>
-        <span class="release-status">${c.status}</span>
+        <a class="button" href="${site.chromeWebStoreUrl}">${c.installChrome}${icon('arrow')}</a>
+        <a class="button button-quiet" href="${site.edgeAddonsUrl}">${c.installEdge}${icon('arrow')}</a>
+        <a class="button button-quiet" href="${site.releaseUrl}">${c.installManual}${icon('arrow')}</a>
       </div>
     </section>
     <section class="capture-types wrap" aria-label="${c.featuresLabel}">
