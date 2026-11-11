@@ -7,7 +7,7 @@ import { site } from '../src/config.mjs';
 import { cleanPageLocation, cleanReferrer, eventParameters } from '../src/assets/analytics.js';
 
 for (const locale of ['en', 'zh']) {
-  test(`${locale}: crawlable homepage has canonical, reciprocal languages and store release metadata`, () => {
+  test(`${locale}: crawlable homepage has canonical, reciprocal languages and store links in its metadata`, () => {
     const html = renderHome(locale);
     assert.equal((html.match(/<h1>/g) ?? []).length, 1);
     assert.ok(html.includes(`<html lang="${content[locale].lang}"`));
@@ -15,10 +15,9 @@ for (const locale of ['en', 'zh']) {
     for (const [language, path] of [['en', '/'], ['zh-CN', '/zh/'], ['x-default', '/']]) assert.ok(html.includes(`hreflang="${language}" href="${site.origin}${path}"`));
     const json = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)[1]);
     const app = json['@graph'].find(item => item['@type'] === 'SoftwareApplication');
-    assert.equal(app.softwareVersion, site.extensionVersion);
-    assert.equal(app.installUrl, site.chromeWebStoreUrl);
+    assert.equal(app.softwareVersion, undefined);
+    assert.deepEqual(app.installUrl, [site.chromeWebStoreUrl, site.edgeAddonsUrl]);
     assert.equal(app.aggregateRating, undefined);
-    assert.ok(html.includes(content[locale].status));
   });
   test(`${locale}: privacy policy covers the extension and website analytics`, () => {
     const html = renderPrivacy(locale);

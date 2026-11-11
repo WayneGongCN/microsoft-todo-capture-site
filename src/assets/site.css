@@ -14,7 +14,6 @@
   html[lang="zh-CN"] .hero h1 { max-width:23ch; letter-spacing:-.045em; line-height:1.2; }
   .hero-intro { max-width:62ch; color:var(--muted); font-size:16px; line-height:1.7; margin-top:18px; }
   .hero-actions { display:flex; align-items:center; flex-wrap:wrap; gap:12px 18px; margin-top:22px; }
-  .release-status { color:var(--muted); font-size:13px; }
   .capture-types { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
   .capture-types article { display:grid; grid-template-rows:auto 1fr auto; border-top:1px solid var(--line); padding-top:18px; }
   .capture-types h2 { font-size:20px; font-weight:600; letter-spacing:-.02em; }
@@ -51,6 +50,7 @@
   }
   @media (max-width:600px) {
     .hero-intro { font-size:15px; }
+    .hero-actions { flex-direction:column; align-items:stretch; }
   }
   @media (max-width:420px) {
     .wrap { width:calc(100% - 32px); }

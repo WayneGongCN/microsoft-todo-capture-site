@@ -1,5 +1,3 @@
-import { site } from './config.mjs';
-
 export const content = {
   en: {
     lang: 'en', path: '/', other: '/zh/', otherLabel: '中文',
@@ -7,7 +5,9 @@ export const content = {
     description: 'Save webpages, selected text, and links to Microsoft To Do with To Do Capture, an independent, open-source Chrome extension. Choose a list and keep browsing.',
     heading: 'Save webpages to Microsoft To Do',
     intro: 'Turn webpages, selected text, and links into tasks. Choose a list, add a note, or set a reminder before saving.',
-    install: 'Add to Chrome', status: `Version ${site.extensionVersion} is live`,
+    installChrome: 'Install from the Chrome Web Store',
+    installEdge: 'Install from Microsoft Edge Add-ons',
+    installManual: 'Download for manual installation',
     featuresLabel: 'Key features',
     illustration: {
       menuLabel: 'Right-click menu',
@@ -45,7 +45,9 @@ export const content = {
     description: 'To Do Capture 是适用于 Microsoft To Do（微软待办）的独立开源 Chrome 扩展。浏览时可把网页、选中文字和链接保存为待办，并选择要保存到的清单。',
     heading: '把网页保存到 Microsoft To Do',
     intro: '把网页、选中的文字和链接存成待办。保存前可选择清单、添加备注或设置提醒。',
-    install: '添加至 Chrome', status: `${site.extensionVersion} 已上线`,
+    installChrome: '从 Chrome 应用商店安装',
+    installEdge: '从 Edge 应用商店安装',
+    installManual: '下载手动安装',
     featuresLabel: '主要功能',
     illustration: {
       menuLabel: '右键菜单',
