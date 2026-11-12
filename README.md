@@ -1,12 +1,20 @@
 # To Do Capture website
 
-Independent bilingual homepage for the [Microsoft To Do browser extension](https://github.com/WayneGongCN/microsoft-todo-browser-ext).
+To Do Capture is an independent, open-source extension for Chrome and Edge that saves webpages, selected text, and links to Microsoft To Do. This repository contains its English and Simplified Chinese homepages, privacy policies, and analytics relay. Both homepages link to the Chrome Web Store, Microsoft Edge Add-ons, and the latest GitHub release for manual installation. [Extension source](https://github.com/WayneGongCN/microsoft-todo-browser-ext)
 
-Production: **https://todo-ext.waynegong.com**
+- Primary domain · [todo-ext.waynegong.com](https://todo-ext.waynegong.com/)
+- Original Vercel domain · [microsoft-todo-capture-site.vercel.app](https://microsoft-todo-capture-site.vercel.app/)
+- Site pages · `/`, `/zh/`, `/privacy/`, `/zh/privacy/`
+
+## Deployment
+
+Import this GitHub repository into Vercel and use `main` as the production branch. [`vercel.json`](vercel.json) sets `npm run build` as the build command, `dist/` as the output directory, and the security and cache headers. Vercel also deploys [`api/extension-analytics.js`](api/extension-analytics.js) as a serverless function. Preview builds use `noindex,nofollow` and block crawling in `robots.txt`. [Vercel GitHub deployment guide](https://vercel.com/docs/git/vercel-for-github)
+
+The primary domain is configured in [`src/config.mjs`](src/config.mjs) and used for canonical URLs, language alternates, Open Graph metadata, and the sitemap. If the domain changes, update that config and the Vercel domain assignment, then redeploy. Keep the Google Search Console verification tags in [`scripts/build.mjs`](scripts/build.mjs) and submit the new `/sitemap.xml` after verifying the new property. Bing Webmaster Tools can import the verified property from Search Console.
 
 ## Development
 
-Node.js 22 or later. The production site has no runtime dependencies and serves static HTML, CSS and JavaScript.
+Use Node.js 22 or later. The site builds to static HTML, CSS, and JavaScript.
 
 ```sh
 npm ci
@@ -39,21 +47,11 @@ The canonical brand mark is [`public/favicon.svg`](public/favicon.svg). Run `npm
 
 Update screenshots from the matching extension build using sample data. Keep them in display order by filename and export them as 24-bit RGB PNGs. The current screenshots show the capture and settings UI in the 2.0.1 release candidate. Store uploads use the files from this directory, which lives outside the website's public build.
 
-## Product state and publication
-
-The English and Chinese homepages describe the three capture modes and link to the Chrome Web Store, Microsoft Edge Add-ons, and the latest GitHub release for manual installation.
-
-Vercel builds the site with `npm run build` and serves `dist/`. `vercel.json` declares the output, security headers and immutable caching for content-fingerprinted assets. Preview builds emit `noindex,nofollow` and a disallowing robots file. Production builds are indexable. When changing the production domain, update `src/config.mjs` and redeploy so the canonical, hreflang, sitemap, Open Graph and analytics host stay consistent.
-
-Routes: `/`, `/zh/`, `/privacy/`, `/zh/privacy/`. Unknown paths return HTTP 404. All main content is present without JavaScript. Reciprocal `en`, `zh-CN` and `x-default` alternates are paired with self-referencing canonicals. Schema.org metadata includes the two store installation URLs. The sitemap contains only real production routes. Search discovery and ranking are controlled by search engines; deployment does not prove index inclusion.
-
-The Vercel production homepage publishes the Google Search Console ownership tag. Keep it in `scripts/build.mjs` for ongoing verification. Bing Webmaster Tools imports the verified site and its sitemap through the existing Search Console connection. If the production hostname changes, verify the new URL-prefix property, submit its `/sitemap.xml`, and import the new property into Bing.
-
 ## Analytics
 
-The original homepage stream is retained: GA4 property `298798570`, stream `3193804945`, measurement ID `G-QR2Z39S77X`. It is distinct from the extension’s own GA resource.
+### Website events
 
-Analytics load only after opt-in on the custom domain and the original Vercel hostname. Preview/local visits do not collect. Global Privacy Control overrides a previous opt-in. Visitors can withdraw from the footer. Advertising features are disabled. Manual page views are sent once per page; analytics URLs exclude query strings/fragments and referrers contain only the origin.
+The website reports to GA4 property `298798570`, stream `3193804945`, measurement ID `G-QR2Z39S77X`. Analytics load after visitor opt-in on either production domain. Preview and local visits skip collection. Global Privacy Control overrides a previous opt-in, and visitors can withdraw from the footer. The site sends one manual page view per page and disables advertising features. Reported URLs omit query strings and fragments, and referrers contain only the origin.
 
 | Event | Parameters | Meaning |
 | --- | --- | --- |
@@ -70,9 +68,9 @@ For DebugView, a consented production visit may use `?analytics_debug=1`; this p
 
 ### Extension events
 
-The Vercel function at `/api/extension-analytics/` accepts opt-in events from the extension and forwards them to GA4 property `385775162`, stream `5470384182` (`G-Q2114CB24F`). Set `GA_EXTENSION_API_SECRET` as a sensitive Vercel environment variable for this project. Generate it in that stream’s Measurement Protocol API secrets settings. The function accepts the store extension origin in production and the development extension origin in Preview. To use a branch-scoped Preview secret, deploy that Git branch. An unconfigured function returns 503.
+When users enable usage analytics in the Chrome Web Store version, the extension sends `extension_open` and successful `task_created` events to `/api/extension-analytics/` on the original Vercel domain. The relay forwards validated events to GA4 property `385775162`, stream `5470384182` (`G-Q2114CB24F`). It accepts the extension version, a random installation ID, the session ID, and the screen (`surface`) for open events. Task contents, browsing data, and Microsoft account details stay outside the analytics payload. The Microsoft Edge Add-ons version skips usage analytics. [Privacy policy](https://todo-ext.waynegong.com/privacy/)
 
-The relay forwards `extension_open` (with `surface`) and `task_created`, the extension version, a random client ID, and the session ID. It validates the event and discards additional fields before sending anything to GA4.
+Set `GA_EXTENSION_API_SECRET` in the Vercel environment that needs the relay. Generate the secret in the extension stream’s GA4 Measurement Protocol settings. Production accepts the Chrome Web Store extension origin, while Preview accepts the development extension origin. Valid events receive HTTP 503 when the secret is missing.
 
 ## License
 
