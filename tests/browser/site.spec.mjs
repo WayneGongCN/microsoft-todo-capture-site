@@ -37,18 +37,12 @@ for (const [path, language, installLabels] of [
     expect(result.violations).toEqual([]);
   });
 
-  test(`${path} tracks each installation destination after consent`, async ({ page }) => {
-    const requests = await productionFixture(page);
+  test(`${path} tracks each installation destination by default`, async ({ page }) => {
+    await productionFixture(page);
     for (const destination of installDestinations) {
       await page.route(destination, route => route.fulfill({ status: 204 }));
     }
     await page.goto(`${site.origin}${path}?token=private#example`);
-    const firstLink = page.getByRole('link', { name: installLabels[0], exact: true });
-    await firstLink.click();
-    expect(await page.evaluate(() => window.dataLayer)).toBeUndefined();
-    expect(requests).toHaveLength(0);
-
-    await page.locator('[data-consent-allow]').click();
     for (const label of installLabels) {
       await page.getByRole('link', { name: label, exact: true }).click();
     }
@@ -59,8 +53,8 @@ for (const [path, language, installLabels] of [
 
     await page.locator('[data-analytics-preferences]').click();
     await page.locator('[data-consent-deny]').click();
-    await firstLink.click();
-    expect(await page.evaluate(() => window.dataLayer.length)).toBe(events.length + 1);
+    await page.getByRole('link', { name: installLabels[0], exact: true }).click();
+    expect(await page.evaluate(() => window.dataLayer.length)).toBe(events.length);
   });
 }
 
@@ -94,35 +88,38 @@ async function productionFixture(page, origin = site.origin) {
   return googleRequests;
 }
 
-test('analytics waits for consent, sends one pageview, filters data and stops after withdrawal', async ({ page }) => {
+test('analytics defaults to cookieless, sends one pageview and respects the saved setting', async ({ page }) => {
   const requests = await productionFixture(page);
+  await page.context().addCookies([{ name: '_ga', value: 'GA1.1.123.456', url: site.origin }]);
   await page.goto(`${site.origin}/?token=private#example`);
-  await expect(page.locator('[data-consent]')).toBeVisible();
-  expect(requests).toHaveLength(0);
-  await page.getByRole('button', { name: 'Allow analytics', exact: true }).click();
+  await expect(page.locator('[data-consent]')).toBeHidden();
   await expect.poll(() => requests.length).toBe(1);
+  expect((await page.context().cookies()).some(cookie => cookie.name === '_ga')).toBe(false);
   await page.getByRole('link', { name: 'GitHub', exact: true }).click();
   const events = await page.evaluate(() => window.dataLayer.map(entry => Array.from(entry)));
   const pageviews = events.filter(entry => entry[0] === 'event' && entry[1] === 'page_view');
   expect(pageviews).toHaveLength(1);
   expect(pageviews[0][2].page_location).toBe(`${site.origin}/`);
-  expect(events.find(entry => entry[0] === 'config')[2].cookie_domain).toBe('none');
+  expect(events.filter(entry => entry[0] === 'consent')).toEqual([
+    ['consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' }],
+  ]);
   expect(events.some(entry => entry[1] === 'project_click' && entry[2].cta_location === 'header')).toBe(true);
   expect(JSON.stringify(events)).not.toContain('private');
   await page.getByRole('button', { name: 'Analytics preferences', exact: true }).click();
-  await page.getByRole('button', { name: 'No thanks', exact: true }).click();
-  const afterWithdrawal = await page.evaluate(() => window.dataLayer.map(entry => Array.from(entry)));
-  expect(afterWithdrawal.at(-1)).toEqual(['consent', 'update', { analytics_storage: 'denied' }]);
-  await page.getByRole('link', { name: 'GitHub', exact: true }).click();
-  expect(await page.evaluate(() => window.dataLayer.length)).toBe(afterWithdrawal.length);
+  await page.getByRole('button', { name: 'Turn off analytics', exact: true }).click();
+  expect(await page.evaluate(id => window[`ga-disable-${id}`], site.measurementId)).toBe(true);
+  await page.reload();
+  expect(await page.evaluate(() => window.dataLayer)).toBeUndefined();
+  expect(requests).toHaveLength(1);
+  await page.getByRole('button', { name: 'Analytics preferences', exact: true }).click();
+  await page.getByRole('button', { name: 'Turn on analytics', exact: true }).click();
+  await expect.poll(() => requests.length).toBe(2);
 });
 
-test('the old production hostname still supports consented analytics', async ({ page }) => {
+test('the old production hostname also enables cookieless analytics by default', async ({ page }) => {
   const legacyOrigin = `https://${site.legacyHostname}`;
   const requests = await productionFixture(page, legacyOrigin);
   await page.goto(`${legacyOrigin}/`);
-  expect(requests).toHaveLength(0);
-  await page.getByRole('button', { name: 'Allow analytics', exact: true }).click();
   await expect.poll(() => requests.length).toBe(1);
 });
 

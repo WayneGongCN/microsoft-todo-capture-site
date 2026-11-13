@@ -30,12 +30,12 @@ export function eventParameters(name, parameters) {
   return Object.fromEntries(Object.entries(parameters).filter(([key, value]) => schema[name][key]?.includes(value)));
 }
 
-/** 读取本地统计偏好，存储不可用时保持未授权，喵~ */
+/** 读取保存的统计偏好，无法读取时停用统计，喵~ */
 function readPreference() {
-  try { return localStorage.getItem(preferenceKey); } catch { return null; }
+  try { return localStorage.getItem(preferenceKey); } catch { return 'denied'; }
 }
 
-/** 只在主动同意后初始化 Google 标签，避免未授权的统计请求，喵~ */
+/** 用无 Cookie 模式发送站内事件，每次页面加载只发送一次浏览事件，喵~ */
 function loadAnalytics() {
   if (!enabled || !permitted || navigator.globalPrivacyControl) return;
   window[`ga-disable-${measurementId}`] = false;
@@ -44,15 +44,13 @@ function loadAnalytics() {
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
     window.gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
-    window.gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' });
+    window.gtag('set', 'ads_data_redaction', true);
     window.gtag('js', new Date());
-    window.gtag('config', measurementId, { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false, page_location: cleanPageLocation(location.href), page_referrer: cleanReferrer(document.referrer), cookie_domain: 'none', cookie_expires: 60 * 60 * 24 * 180, ...(new URL(location.href).searchParams.get('analytics_debug') === '1' ? { debug_mode: true } : {}) });
+    window.gtag('config', measurementId, { send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false, page_location: cleanPageLocation(location.href), page_referrer: cleanReferrer(document.referrer), ...(new URL(location.href).searchParams.get('analytics_debug') === '1' ? { debug_mode: true } : {}) });
     const script = document.createElement('script');
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
     document.head.append(script);
-  } else {
-    window.gtag('consent', 'update', { analytics_storage: 'granted' });
   }
   if (!pageViewed) {
     pageViewed = true;
@@ -60,10 +58,8 @@ function loadAnalytics() {
   }
 }
 
-/** 撤回统计时禁用后续事件并清理本站 Google Analytics Cookie，喵~ */
-function stopAnalytics() {
-  window[`ga-disable-${measurementId}`] = true;
-  if (initialized) window.gtag('consent', 'update', { analytics_storage: 'denied' });
+/** 清理旧版网站曾写入的 Google Analytics Cookie，喵~ */
+function clearAnalyticsCookies() {
   for (const entry of document.cookie.split(';')) {
     const key = entry.split('=')[0].trim();
     if (key === '_ga' || key.startsWith('_ga_')) {
@@ -72,12 +68,15 @@ function stopAnalytics() {
   }
 }
 
-/** 保存访客选择，拒绝和 GPC 都不会阻止官网其他功能，喵~ */
-function setConsent(allow) {
+/** 保存统计开关，关闭后停发 Google Analytics 事件，喵~ */
+function setPreference(allow) {
   permitted = allow && !navigator.globalPrivacyControl;
   try { localStorage.setItem(preferenceKey, permitted ? 'granted' : 'denied'); } catch { /* 偏好无法保存时仍遵守当前页面选择，喵~ */ }
   document.querySelector('[data-consent]').hidden = true;
-  if (permitted) loadAnalytics(); else stopAnalytics();
+  const button = document.querySelector('[data-analytics-preferences]');
+  button.setAttribute('aria-expanded', 'false');
+  button.focus();
+  if (permitted) loadAnalytics(); else window[`ga-disable-${measurementId}`] = true;
 }
 
 /** 初始化生产域名下的可选统计，预览和本地页面默认不产生数据，喵~ */
@@ -85,22 +84,28 @@ export function initAnalytics() {
   measurementId = document.documentElement.dataset.analyticsId ?? '';
   const hosts = document.documentElement.dataset.analyticsHosts?.split(',') ?? [];
   enabled = hosts.includes(location.hostname) && /^G-[A-Z0-9]+$/.test(measurementId);
-  const banner = document.querySelector('[data-consent]');
+  const button = document.querySelector('[data-analytics-preferences]');
+  if (enabled) clearAnalyticsCookies();
   if (!enabled || navigator.globalPrivacyControl) {
-    if (enabled) stopAnalytics();
-    document.querySelectorAll('[data-analytics-preferences]').forEach(button => { button.hidden = true; });
+    if (enabled) window[`ga-disable-${measurementId}`] = true;
+    button.hidden = true;
     return;
   }
-  document.querySelector('[data-consent-allow]').addEventListener('click', () => setConsent(true));
-  document.querySelector('[data-consent-deny]').addEventListener('click', () => setConsent(false));
-  document.querySelectorAll('[data-analytics-preferences]').forEach(button => button.addEventListener('click', () => { banner.hidden = false; banner.querySelector('[data-consent-deny]').focus(); }));
-  const preference = readPreference();
-  permitted = preference === 'granted';
-  banner.hidden = preference === 'granted' || preference === 'denied';
+  const panel = document.querySelector('[data-consent]');
+  const allow = panel.querySelector('[data-consent-allow]');
+  const deny = panel.querySelector('[data-consent-deny]');
+  allow.addEventListener('click', () => setPreference(true));
+  deny.addEventListener('click', () => setPreference(false));
+  button.addEventListener('click', () => {
+    panel.hidden = !panel.hidden;
+    button.setAttribute('aria-expanded', String(!panel.hidden));
+    if (!panel.hidden) (permitted ? deny : allow).focus();
+  });
+  permitted = readPreference() !== 'denied';
   if (permitted) loadAnalytics();
 }
 
-/** 发送经过枚举校验的交互事件，不回放访客同意前发生的行为，喵~ */
+/** 发送经过枚举校验的交互事件，关闭期间的操作不会补报，喵~ */
 export function track(name, parameters = {}) {
   const safe = eventParameters(name, parameters);
   if (!enabled || !permitted || safe === null || navigator.globalPrivacyControl || !window.gtag) return;

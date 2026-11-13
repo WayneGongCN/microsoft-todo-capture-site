@@ -42,9 +42,9 @@ function footer(c) {
       <span>© 2026 waynegong</span>
       <small>${c.lang === 'en' ? 'Not affiliated with or endorsed by Microsoft.' : '非微软官方项目，与微软无隶属或背书关系。'}</small>
     </div>
-    <nav aria-label="${c.lang === 'en' ? 'Footer' : '页脚'}"><a href="${c.lang === 'en' ? '/privacy/' : '/zh/privacy/'}">${c.privacy}</a><button type="button" data-analytics-preferences>${c.analytics}</button><a href="${site.websiteRepository}" data-track="website_source_click" data-track-value="footer">${c.websiteSource} ${icon('arrow')}</a></nav>
+    <nav aria-label="${c.lang === 'en' ? 'Footer' : '页脚'}"><a href="${c.lang === 'en' ? '/privacy/' : '/zh/privacy/'}">${c.privacy}</a><button type="button" aria-expanded="false" aria-controls="analytics-preferences" data-analytics-preferences>${c.analytics}</button><a href="${site.websiteRepository}" data-track="website_source_click" data-track-value="footer">${c.websiteSource} ${icon('arrow')}</a></nav>
   </footer>
-  <aside class="consent" aria-label="${c.consentAria}" hidden data-consent><div><strong>${c.consentTitle}</strong><p>${c.consentText} <a href="${c.lang === 'en' ? '/privacy/' : '/zh/privacy/'}">${c.privacy}</a></p></div><div class="consent-actions"><button class="button button-small" type="button" data-consent-allow>${c.allow}</button><button class="button button-quiet button-small" type="button" data-consent-deny>${c.deny}</button></div></aside>`;
+  <aside id="analytics-preferences" class="consent" aria-label="${c.consentAria}" hidden data-consent><div><strong>${c.consentTitle}</strong><p>${c.consentText} <a href="${c.lang === 'en' ? '/privacy/' : '/zh/privacy/'}">${c.privacy}</a></p></div><div class="consent-actions"><button class="button button-small" type="button" data-consent-allow>${c.allow}</button><button class="button button-quiet button-small" type="button" data-consent-deny>${c.deny}</button></div></aside>`;
 }
 
 /** 把可索引内容和正确的语言、规范链接放在静态 HTML 中，喵~ */
