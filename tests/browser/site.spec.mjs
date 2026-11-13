@@ -18,10 +18,11 @@ const installDestinations = [
   'https://microsoftedge.microsoft.com/addons/detail/to-do-capture/mhfmejfcbgojopoeakmglpgmlokpdjjg',
   'https://github.com/WayneGongCN/microsoft-todo-browser-ext/releases/latest',
 ];
+const installEvents = ['install_chrome_click', 'install_edge_click', 'install_manual_click'];
 
-for (const [path, installLabels] of [
-  ['/', ['Install from the Chrome Web Store', 'Install from Microsoft Edge Add-ons', 'Download for manual installation']],
-  ['/zh/', ['从 Chrome 应用商店安装', '从 Edge 应用商店安装', '下载手动安装']],
+for (const [path, language, installLabels] of [
+  ['/', 'en', ['Install from the Chrome Web Store', 'Install from Microsoft Edge Add-ons', 'Download for manual installation']],
+  ['/zh/', 'zh', ['从 Chrome 应用商店安装', '从 Edge 应用商店安装', '下载手动安装']],
 ]) {
   test(`${path} presents three capture methods and three accessible installation links`, async ({ page }) => {
     await page.goto(path);
@@ -34,6 +35,32 @@ for (const [path, installLabels] of [
     await expect(page.getByRole('main').getByRole('heading', { level: 2 })).toHaveCount(3);
     const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(result.violations).toEqual([]);
+  });
+
+  test(`${path} tracks each installation destination after consent`, async ({ page }) => {
+    const requests = await productionFixture(page);
+    for (const destination of installDestinations) {
+      await page.route(destination, route => route.fulfill({ status: 204 }));
+    }
+    await page.goto(`${site.origin}${path}?token=private#example`);
+    const firstLink = page.getByRole('link', { name: installLabels[0], exact: true });
+    await firstLink.click();
+    expect(await page.evaluate(() => window.dataLayer)).toBeUndefined();
+    expect(requests).toHaveLength(0);
+
+    await page.locator('[data-consent-allow]').click();
+    for (const label of installLabels) {
+      await page.getByRole('link', { name: label, exact: true }).click();
+    }
+    const events = await page.evaluate(() => window.dataLayer.map(entry => Array.from(entry)));
+    expect(events.filter(entry => entry[0] === 'event' && entry[1].startsWith('install_'))).toEqual(
+      installEvents.map(name => ['event', name, { cta_location: 'hero', site_language: language, page_type: 'home', page_location: `${site.origin}${path}` }]),
+    );
+
+    await page.locator('[data-analytics-preferences]').click();
+    await page.locator('[data-consent-deny]').click();
+    await firstLink.click();
+    expect(await page.evaluate(() => window.dataLayer.length)).toBe(events.length + 1);
   });
 }
 

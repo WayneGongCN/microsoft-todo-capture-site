@@ -119,9 +119,9 @@ export function renderHome(locale) {
       <h1>${c.heading}</h1>
       <p class="hero-intro">${c.intro}</p>
       <div class="hero-actions">
-        <a class="button" href="${site.chromeWebStoreUrl}">${c.installChrome}${icon('arrow')}</a>
-        <a class="button button-quiet" href="${site.edgeAddonsUrl}">${c.installEdge}${icon('arrow')}</a>
-        <a class="button button-quiet" href="${site.releaseUrl}">${c.installManual}${icon('arrow')}</a>
+        <a class="button" href="${site.chromeWebStoreUrl}" data-track="install_chrome_click" data-track-value="hero">${c.installChrome}${icon('arrow')}</a>
+        <a class="button button-quiet" href="${site.edgeAddonsUrl}" data-track="install_edge_click" data-track-value="hero">${c.installEdge}${icon('arrow')}</a>
+        <a class="button button-quiet" href="${site.releaseUrl}" data-track="install_manual_click" data-track-value="hero">${c.installManual}${icon('arrow')}</a>
       </div>
     </section>
     <section class="capture-types wrap" aria-label="${c.featuresLabel}">
