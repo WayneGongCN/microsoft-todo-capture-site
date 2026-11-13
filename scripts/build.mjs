@@ -15,7 +15,7 @@ const scriptName = `site-${createHash('sha256').update(script).digest('hex').sli
 const style = await readFile('src/assets/site.css', 'utf8');
 const styleName = `site-${createHash('sha256').update(style).digest('hex').slice(0, 12)}.css`;
 await Promise.all([writeFile(`dist/assets/${analyticsName}`, analytics), writeFile(`dist/assets/${scriptName}`, script), writeFile(`dist/assets/${styleName}`, style)]);
-const isPreview = process.env.VERCEL_ENV === 'preview';
+const isPreview = process.env.SITE_ENV === 'preview' || process.env.VERCEL_ENV === 'preview';
 
 /** 为静态资源加内容指纹，并防止预览版本进入搜索索引，喵~ */
 function finalize(html) {
@@ -28,7 +28,7 @@ const searchConsoleTags = [
   'eYsxWjySciEsxiEG4SSBbKE7bfUw2b8333Xmwy-JADk', // Original Vercel hostname
   'Zzgl3Cfgek6ttzuqPmvw62FWowAGBetMxpr4dnYwozc', // todo-ext.waynegong.com
 ].map(token => `<meta name="google-site-verification" content="${token}">`).join('\n');
-const productionHomepage = process.env.VERCEL_ENV === 'production'
+const productionHomepage = process.env.SITE_ENV === 'production' || process.env.VERCEL_ENV === 'production'
   ? homepage.replace('</head>', `${searchConsoleTags}\n</head>`)
   : homepage;
 

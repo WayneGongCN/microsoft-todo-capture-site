@@ -3,14 +3,13 @@
 To Do Capture is an independent, open-source extension for Chrome and Edge that saves webpages, selected text, and links to Microsoft To Do. This repository contains its English and Simplified Chinese homepages and privacy policies. Both homepages link to the Chrome Web Store, Microsoft Edge Add-ons, and the latest GitHub release for manual installation. [Extension source](https://github.com/WayneGongCN/microsoft-todo-browser-ext)
 
 - Primary domain · [todo-ext.waynegong.com](https://todo-ext.waynegong.com/)
-- Original Vercel domain · [microsoft-todo-capture-site.vercel.app](https://microsoft-todo-capture-site.vercel.app/)
 - Site pages · `/`, `/zh/`, `/privacy/`, `/zh/privacy/`
 
 ## Deployment
 
-Import this GitHub repository into Vercel and use `main` as the production branch. [`vercel.json`](vercel.json) sets `npm run build` as the build command, `dist/` as the output directory, and the security and cache headers. Preview builds use `noindex,nofollow` and block crawling in `robots.txt`. [Vercel GitHub deployment guide](https://vercel.com/docs/git/vercel-for-github)
+Deploy a tested `main` checkout with `npm run deploy`. The command builds `dist/` and publishes it to Cloudflare Workers Static Assets. [`cloudflare.config.ts`](cloudflare.config.ts) binds `todo-ext.waynegong.com` and serves `404.html` with HTTP 404 for missing paths. [`public/_headers`](public/_headers) sets the security and cache headers. Authenticate `cf` or provide `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in the deployment environment. The `staging` mode publishes the same assets to the Worker’s `workers.dev` URL during the initial cutover. [Cloudflare CLI deployment guide](https://developers.cloudflare.com/cf/projects/#deploy)
 
-The primary domain is configured in [`src/config.mjs`](src/config.mjs) and used for canonical URLs, language alternates, Open Graph metadata, and the sitemap. If the domain changes, update that config and the Vercel domain assignment, then redeploy. Keep the Google Search Console verification tags in [`scripts/build.mjs`](scripts/build.mjs) and submit the new `/sitemap.xml` after verifying the new property. Bing Webmaster Tools can import the verified property from Search Console.
+The primary domain is configured in [`src/config.mjs`](src/config.mjs) and used for canonical URLs, language alternates, Open Graph metadata, and the sitemap. If the domain changes, update that config and the Worker custom domain, then redeploy. Keep the Google Search Console verification tags in [`scripts/build.mjs`](scripts/build.mjs) and submit the new `/sitemap.xml` after verifying the new property. Bing Webmaster Tools can import the verified property from Search Console.
 
 ## Development
 
