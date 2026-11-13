@@ -1,4 +1,7 @@
 const schema = {
+  install_chrome_click: { cta_location: ['hero'] },
+  install_edge_click: { cta_location: ['hero'] },
+  install_manual_click: { cta_location: ['hero'] },
   project_click: { cta_location: ['header'] },
   website_source_click: { cta_location: ['footer'] },
   language_switch: { target_language: ['en', 'zh'] },

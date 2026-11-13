@@ -56,11 +56,16 @@ The website reports to GA4 property `298798570`, stream `3193804945`, measuremen
 | Event | Parameters | Meaning |
 | --- | --- | --- |
 | `page_view` | `site_language`, `page_type` | One consented page view |
+| `install_chrome_click` | `cta_location` | Click to open the Chrome Web Store listing |
+| `install_edge_click` | `cta_location` | Click to open the Microsoft Edge Add-ons listing |
+| `install_manual_click` | `cta_location` | Click to open the GitHub release for manual installation |
 | `project_click` | `cta_location` | Interest in the GitHub project, not an installation |
 | `website_source_click` | `cta_location` | Website source click |
 | `language_switch` | `target_language` | Language navigation |
 
 Every interaction also includes `site_language`, `page_type` and a cleaned page location. Parameters are allowlisted fixed values. No notes, selections, task titles, user IDs or Microsoft account information are sent. No events are replayed from before consent. `_ga` cookies are cleared on withdrawal.
+
+Mark the three `install_*_click` events as GA4 key events using the once-per-event counting method. They measure clicks to installation destinations.
 
 Custom parameters must be registered as event-scoped dimensions in GA4 to use them in standard explorations: `site_language`, `page_type`, `cta_location`, `target_language`. Registration requires Analytics Editor access and an edit-scoped OAuth connection. Event collection and event-name reports work without dimension registration.
 
