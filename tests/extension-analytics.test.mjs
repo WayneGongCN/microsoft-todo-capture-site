@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import relay from '../api/extension-analytics.js';
 
 const storeOrigin = 'chrome-extension://ffpljgmbiankjaokoefefmkoghcgoodn';
+const edgeOrigin = 'chrome-extension://mhfmejfcbgojopoeakmglpgmlokpdjjg';
 const devOrigin = 'chrome-extension://gopiiihaachagcmaijfaphjijefgbgnk';
 const event = {
   clientId: '1405143245.715397391',
@@ -54,13 +55,28 @@ test('relay accepts the production extension and forwards only approved fields',
     consent: { ad_user_data: 'DENIED', ad_personalization: 'DENIED' },
     events: [{
       name: 'extension_open',
-      params: { session_id: event.sessionId, engagement_time_msec: 1, extension_version: event.version, surface: 'capture' },
+      params: { session_id: event.sessionId, engagement_time_msec: 1, extension_version: event.version, extension_browser: 'chrome', surface: 'capture' },
     }],
   });
+
+  const edgePreflight = await relay.fetch(request(edgeOrigin, null, 'OPTIONS'));
+  assert.equal(edgePreflight.status, 204);
+  assert.equal(edgePreflight.headers.get('Access-Control-Allow-Origin'), edgeOrigin);
+  const newEvent = { event: 'task_created', version: '2.0.5' };
+  for (const [origin, browser] of [[storeOrigin, 'chrome'], [edgeOrigin, 'edge']]) {
+    const response = await relay.fetch(request(origin, newEvent));
+    assert.equal(response.status, 204);
+    assert.equal(response.headers.get('Access-Control-Allow-Origin'), origin);
+    const body = JSON.parse(upstream.mock.calls.at(-1).arguments[1].body);
+    assert.notEqual(body.client_id, event.clientId);
+    assert.deepEqual(body.events, [{ name: 'task_created', params: { extension_version: '2.0.5', extension_browser: browser } }]);
+  }
+  assert.equal((await relay.fetch(request(edgeOrigin, event))).status, 400);
 
   process.env.VERCEL_ENV = 'preview';
   delete process.env.GA_EXTENSION_API_SECRET;
   assert.equal((await relay.fetch(request(devOrigin, event))).status, 503);
   assert.equal((await relay.fetch(request(storeOrigin, event))).status, 403);
-  assert.equal(upstream.mock.callCount(), 1);
+  assert.equal((await relay.fetch(request(edgeOrigin, newEvent))).status, 403);
+  assert.equal(upstream.mock.callCount(), 3);
 });

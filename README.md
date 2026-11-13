@@ -29,7 +29,7 @@ npx playwright install chromium
 npm run check
 ```
 
-Checks cover static SEO metadata, localized content, installation links, narrow layouts, accessibility, consent and Global Privacy Control. `node scripts/generate-og.mjs` regenerates the committed 1200 × 630 sharing image.
+Checks cover static SEO metadata, localized content, installation links, narrow layouts, accessibility, analytics preferences and Global Privacy Control. `node scripts/generate-og.mjs` regenerates the committed 1200 × 630 sharing image.
 
 ## Chrome Web Store assets
 
@@ -51,11 +51,11 @@ Update screenshots from the matching extension build using sample data. Keep the
 
 ### Website events
 
-The website reports to GA4 property `298798570`, stream `3193804945`, measurement ID `G-QR2Z39S77X`. Analytics load after visitor opt-in on either production domain. Preview and local visits skip collection. Global Privacy Control overrides a previous opt-in, and visitors can withdraw from the footer. The site sends one manual page view per page and disables advertising features. Reported URLs omit query strings and fragments, and referrers contain only the origin.
+The website reports to GA4 property `298798570`, stream `3193804945`, measurement ID `G-QR2Z39S77X`. Analytics is on by default on both production domains. Preview and local visits skip collection. The site honors Global Privacy Control and saved opt-outs. Visitors can turn analytics off in the footer. The site sends one manual page view per page, keeps Analytics cookie storage denied, and disables advertising features. Reported URLs omit query strings and fragments, and referrers contain only the origin. GA4 reporting of cookieless signals depends on the property's reporting identity and modeling eligibility.
 
 | Event | Parameters | Meaning |
 | --- | --- | --- |
-| `page_view` | `site_language`, `page_type` | One consented page view |
+| `page_view` | `site_language`, `page_type` | One page view while analytics is on |
 | `install_chrome_click` | `cta_location` | Click to open the Chrome Web Store listing |
 | `install_edge_click` | `cta_location` | Click to open the Microsoft Edge Add-ons listing |
 | `install_manual_click` | `cta_location` | Click to open the GitHub release for manual installation |
@@ -63,19 +63,19 @@ The website reports to GA4 property `298798570`, stream `3193804945`, measuremen
 | `website_source_click` | `cta_location` | Website source click |
 | `language_switch` | `target_language` | Language navigation |
 
-Every interaction also includes `site_language`, `page_type` and a cleaned page location. Parameters are allowlisted fixed values. No notes, selections, task titles, user IDs or Microsoft account information are sent. No events are replayed from before consent. `_ga` cookies are cleared on withdrawal.
+Every interaction also includes `site_language`, `page_type` and a cleaned page location. Parameters are allowlisted fixed values. No notes, selections, task titles, user IDs or Microsoft account information are sent. Events that happen while analytics is off are skipped. The site removes `_ga` cookies written by earlier versions.
 
 Mark the three `install_*_click` events as GA4 key events using the once-per-event counting method. They measure clicks to installation destinations.
 
 Custom parameters must be registered as event-scoped dimensions in GA4 to use them in standard explorations: `site_language`, `page_type`, `cta_location`, `target_language`. Registration requires Analytics Editor access and an edit-scoped OAuth connection. Event collection and event-name reports work without dimension registration.
 
-For DebugView, a consented production visit may use `?analytics_debug=1`; this parameter is stripped from the reported page address. Browser test fixtures intercept Google requests so CI does not add real traffic. Keep automatic page history, site search and other enhanced events disabled in the website data stream. The site defines its own page views and interactions.
+The `?analytics_debug=1` flag sets `debug_mode` and is stripped from the reported page address. Browser test fixtures intercept Google requests so CI does not add real traffic. Keep automatic page history, site search and other enhanced events disabled in the website data stream. The site defines its own page views and interactions.
 
 ### Extension events
 
-When users enable usage analytics in the Chrome Web Store version, the extension sends `extension_open` and successful `task_created` events to `/api/extension-analytics/` on the original Vercel domain. The relay forwards validated events to GA4 property `385775162`, stream `5470384182` (`G-Q2114CB24F`). It accepts the extension version, a random installation ID, the session ID, and the screen (`surface`) for open events. Task contents, browsing data, and Microsoft account details stay outside the analytics payload. The Microsoft Edge Add-ons version skips usage analytics. [Privacy policy](https://todo-ext.waynegong.com/privacy/)
+Usage analytics defaults to on for new Chrome installations and when the switch first becomes available on Edge. Users can turn it off in Settings. The extension sends `extension_open` and successful `task_created` events to `/api/extension-analytics/` on the original Vercel domain. The relay forwards validated events to GA4 property `385775162`, stream `5470384182` (`G-Q2114CB24F`). It accepts the extension version and the screen (`surface`) for open events. It derives `extension_browser` from the source extension ID and supplies a shared GA4 client ID per browser for these events. Use event counts for the new builds, since the shared IDs do not measure unique users or sessions. Older opted-in Chrome builds can still report with their existing installation and session IDs. [Privacy policy](https://todo-ext.waynegong.com/privacy/)
 
-Set `GA_EXTENSION_API_SECRET` in the Vercel environment that needs the relay. Generate the secret in the extension stream’s GA4 Measurement Protocol settings. Production accepts the Chrome Web Store extension origin, while Preview accepts the development extension origin. Valid events receive HTTP 503 when the secret is missing.
+Set `GA_EXTENSION_API_SECRET` in the Vercel environment that needs the relay. Generate the secret in the extension stream’s GA4 Measurement Protocol settings. Production accepts the Chrome Web Store and Microsoft Edge Add-ons extension origins. Preview accepts the development extension origin. Valid events receive HTTP 503 when the secret is missing.
 
 ## License
 
