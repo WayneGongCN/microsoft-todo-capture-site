@@ -1,6 +1,6 @@
 # To Do Capture website
 
-To Do Capture is an independent, open-source extension for Chrome and Edge that saves webpages, selected text, and links to Microsoft To Do. This repository contains its English and Simplified Chinese homepages, privacy policies, and analytics relay. Both homepages link to the Chrome Web Store, Microsoft Edge Add-ons, and the latest GitHub release for manual installation. [Extension source](https://github.com/WayneGongCN/microsoft-todo-browser-ext)
+To Do Capture is an independent, open-source extension for Chrome and Edge that saves webpages, selected text, and links to Microsoft To Do. This repository contains its English and Simplified Chinese homepages and privacy policies. Both homepages link to the Chrome Web Store, Microsoft Edge Add-ons, and the latest GitHub release for manual installation. [Extension source](https://github.com/WayneGongCN/microsoft-todo-browser-ext)
 
 - Primary domain · [todo-ext.waynegong.com](https://todo-ext.waynegong.com/)
 - Original Vercel domain · [microsoft-todo-capture-site.vercel.app](https://microsoft-todo-capture-site.vercel.app/)
@@ -8,7 +8,7 @@ To Do Capture is an independent, open-source extension for Chrome and Edge that 
 
 ## Deployment
 
-Import this GitHub repository into Vercel and use `main` as the production branch. [`vercel.json`](vercel.json) sets `npm run build` as the build command, `dist/` as the output directory, and the security and cache headers. Vercel also deploys [`api/extension-analytics.js`](api/extension-analytics.js) as a serverless function. Preview builds use `noindex,nofollow` and block crawling in `robots.txt`. [Vercel GitHub deployment guide](https://vercel.com/docs/git/vercel-for-github)
+Import this GitHub repository into Vercel and use `main` as the production branch. [`vercel.json`](vercel.json) sets `npm run build` as the build command, `dist/` as the output directory, and the security and cache headers. Preview builds use `noindex,nofollow` and block crawling in `robots.txt`. [Vercel GitHub deployment guide](https://vercel.com/docs/git/vercel-for-github)
 
 The primary domain is configured in [`src/config.mjs`](src/config.mjs) and used for canonical URLs, language alternates, Open Graph metadata, and the sitemap. If the domain changes, update that config and the Vercel domain assignment, then redeploy. Keep the Google Search Console verification tags in [`scripts/build.mjs`](scripts/build.mjs) and submit the new `/sitemap.xml` after verifying the new property. Bing Webmaster Tools can import the verified property from Search Console.
 
@@ -65,17 +65,11 @@ The website reports to GA4 property `298798570`, stream `3193804945`, measuremen
 
 Every interaction also includes `site_language`, `page_type` and a cleaned page location. Parameters are allowlisted fixed values. No notes, selections, task titles, user IDs or Microsoft account information are sent. Events that happen while analytics is off are skipped. The site removes `_ga` cookies written by earlier versions.
 
-Mark the three `install_*_click` events as GA4 key events using the once-per-event counting method. They measure clicks to installation destinations.
+Mark the three `install_*_click` events as GA4 key events using the once-per-event counting method. Use the [Chrome Web Store install report](https://developer.chrome.com/docs/webstore/metrics/#installs-and-uninstalls) and [Microsoft Edge Add-ons analytics dashboard](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/extensions-analytics) for actual store installations. The manual download event counts visits to the release link.
 
 Custom parameters must be registered as event-scoped dimensions in GA4 to use them in standard explorations: `site_language`, `page_type`, `cta_location`, `target_language`. Registration requires Analytics Editor access and an edit-scoped OAuth connection. Event collection and event-name reports work without dimension registration.
 
 The `?analytics_debug=1` flag sets `debug_mode` and is stripped from the reported page address. Browser test fixtures intercept Google requests so CI does not add real traffic. Keep automatic page history, site search and other enhanced events disabled in the website data stream. The site defines its own page views and interactions.
-
-### Extension events
-
-Usage analytics defaults to on for new Chrome installations and when the switch first becomes available on Edge. Users can turn it off in Settings. The extension sends `extension_open` and successful `task_created` events to `/api/extension-analytics/` on the original Vercel domain. The relay forwards validated events to GA4 property `385775162`, stream `5470384182` (`G-Q2114CB24F`). It accepts the extension version and the screen (`surface`) for open events. It derives `extension_browser` from the source extension ID and supplies a shared GA4 client ID per browser for these events. Use event counts for the new builds, since the shared IDs do not measure unique users or sessions. Older opted-in Chrome builds can still report with their existing installation and session IDs. [Privacy policy](https://todo-ext.waynegong.com/privacy/)
-
-Set `GA_EXTENSION_API_SECRET` in the Vercel environment that needs the relay. Generate the secret in the extension stream’s GA4 Measurement Protocol settings. Production accepts the Chrome Web Store and Microsoft Edge Add-ons extension origins. Preview accepts the development extension origin. Valid events receive HTTP 503 when the secret is missing.
 
 ## License
 
