@@ -82,8 +82,8 @@ function setPreference(allow) {
 /** 初始化生产域名下的可选统计，预览和本地页面默认不产生数据，喵~ */
 export function initAnalytics() {
   measurementId = document.documentElement.dataset.analyticsId ?? '';
-  const hosts = document.documentElement.dataset.analyticsHosts?.split(',') ?? [];
-  enabled = hosts.includes(location.hostname) && /^G-[A-Z0-9]+$/.test(measurementId);
+  const host = document.documentElement.dataset.analyticsHost;
+  enabled = host === location.hostname && /^G-[A-Z0-9]+$/.test(measurementId);
   const button = document.querySelector('[data-analytics-preferences]');
   if (enabled) clearAnalyticsCookies();
   if (!enabled || navigator.globalPrivacyControl) {

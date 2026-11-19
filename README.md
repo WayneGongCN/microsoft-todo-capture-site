@@ -7,9 +7,16 @@ To Do Capture is an independent, open-source extension for Chrome and Edge that 
 
 ## Deployment
 
-Deploy a tested `main` checkout with `npm run deploy`. The command builds `dist/` and publishes it to Cloudflare Workers Static Assets. [`cloudflare.config.ts`](cloudflare.config.ts) binds `todo-ext.waynegong.com` and serves `404.html` with HTTP 404 for missing paths. [`public/_headers`](public/_headers) sets the security and cache headers. Authenticate `cf` or provide `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in the deployment environment. The `staging` mode publishes the same assets to the Worker’s `workers.dev` URL during the initial cutover. [Cloudflare CLI deployment guide](https://developers.cloudflare.com/cf/projects/#deploy)
+Every push to `main` runs the [Publish website workflow](.github/workflows/publish-site.yml). It installs dependencies, builds and tests the production site, then publishes `dist/` to the `microsoft-todo-capture-site` Cloudflare Worker. You can also run the workflow manually from `main` in GitHub Actions.
 
-The primary domain is configured in [`src/config.mjs`](src/config.mjs) and used for canonical URLs, language alternates, Open Graph metadata, and the sitemap. If the domain changes, update that config and the Worker custom domain, then redeploy. Keep the Google Search Console verification tags in [`scripts/build.mjs`](scripts/build.mjs) and submit the new `/sitemap.xml` after verifying the new property. Bing Webmaster Tools can import the verified property from Search Console.
+Configure these repository settings under **Settings → Secrets and variables → Actions**.
+
+- Set the `CLOUDFLARE_ACCOUNT_ID` Actions variable to the account that owns the Worker and the custom domain.
+- Set the `CLOUDFLARE_API_TOKEN` Actions secret to a token authorized to deploy the Worker and manage its custom domain.
+
+[`wrangler.jsonc`](wrangler.jsonc) binds `todo-ext.waynegong.com` and serves `404.html` with HTTP 404 for missing paths. [`public/_headers`](public/_headers) sets the security and cache headers.
+
+The primary domain is configured in [`src/config.mjs`](src/config.mjs) and used for canonical URLs, language alternates, Open Graph metadata, and the sitemap. If the domain changes, update that config and the Worker custom domain, then redeploy. Keep the Google Search Console verification tag in [`scripts/build.mjs`](scripts/build.mjs) and submit the new `/sitemap.xml` after verifying the new property. Bing Webmaster Tools can import the verified property from Search Console.
 
 ## Development
 
@@ -50,7 +57,7 @@ Update screenshots from the matching extension build using sample data. Keep the
 
 ### Website events
 
-The website reports to GA4 property `298798570`, stream `3193804945`, measurement ID `G-QR2Z39S77X`. Analytics is on by default on both production domains. Preview and local visits skip collection. The site honors Global Privacy Control and saved opt-outs. Visitors can turn analytics off in the footer. The site sends one manual page view per page, keeps Analytics cookie storage denied, and disables advertising features. Reported URLs omit query strings and fragments, and referrers contain only the origin. GA4 reporting of cookieless signals depends on the property's reporting identity and modeling eligibility.
+The website reports to GA4 property `298798570`, stream `3193804945`, measurement ID `G-QR2Z39S77X`. Analytics is on by default on the production domain. Preview and local visits skip collection. The site honors Global Privacy Control and saved opt-outs. Visitors can turn analytics off in the footer. The site sends one manual page view per page, keeps Analytics cookie storage denied, and disables advertising features. Reported URLs omit query strings and fragments, and referrers contain only the origin. GA4 reporting of cookieless signals depends on the property's reporting identity and modeling eligibility.
 
 | Event | Parameters | Meaning |
 | --- | --- | --- |

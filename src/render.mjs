@@ -61,7 +61,7 @@ function document(c, body, kind = 'home') {
     ...(kind === 'home' ? [{ '@type': 'SoftwareApplication', '@id': `${site.origin}/#application`, name: site.name, applicationCategory: 'ProductivityApplication', url: site.origin, description: c.description, installUrl: [site.chromeWebStoreUrl, site.edgeAddonsUrl], isAccessibleForFree: true, license: 'https://opensource.org/license/mit', sameAs: site.repository, author: { '@type': 'Person', name: 'waynegong', url: 'https://github.com/WayneGongCN' } }] : []),
   ] };
   return `<!doctype html>
-<html lang="${c.lang}" data-page="${kind}" data-analytics-id="${site.measurementId}" data-analytics-hosts="${new URL(site.origin).hostname},${site.legacyHostname}">
+<html lang="${c.lang}" data-page="${kind}" data-analytics-id="${site.measurementId}" data-analytics-host="${new URL(site.origin).hostname}">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="theme-color" content="#f6f5f1">
 <title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}"><meta name="robots" content="${kind === 'notfound' ? 'noindex,follow' : 'index,follow,max-image-preview:large'}"><link rel="canonical" href="${canonical}">
 <link rel="alternate" hreflang="en" href="${site.origin}${enPath}"><link rel="alternate" hreflang="zh-CN" href="${site.origin}${zhPath}"><link rel="alternate" hreflang="x-default" href="${site.origin}${enPath}">
@@ -151,7 +151,7 @@ export function renderPrivacy(locale) {
       <li><a href="${site.repository}/issues">${c.extensionSupport}</a></li>
       <li><a href="https://developer.chrome.com/docs/webstore/program-policies/limited-use">Chrome Web Store Limited Use</a></li>
       <li><a href="https://policies.google.com/privacy">Google Privacy Policy</a></li>
-      <li><a href="https://vercel.com/legal/privacy-policy">Vercel Privacy Policy</a></li>
+      <li><a href="https://www.cloudflare.com/privacypolicy/">Cloudflare Privacy Policy</a></li>
       <li><a href="${site.websiteRepository}/issues">${c.websiteSource} / Issues</a></li>
     </ul></section>
   </main>`, 'privacy');

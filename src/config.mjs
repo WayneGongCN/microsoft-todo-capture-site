@@ -3,7 +3,6 @@ const repository = 'https://github.com/WayneGongCN/microsoft-todo-browser-ext';
 export const site = {
   name: 'To Do Capture',
   origin: 'https://todo-ext.waynegong.com',
-  legacyHostname: 'microsoft-todo-capture-site.vercel.app',
   chromeWebStoreUrl: 'https://chromewebstore.google.com/detail/to-do-capture/ffpljgmbiankjaokoefefmkoghcgoodn',
   edgeAddonsUrl: 'https://microsoftedge.microsoft.com/addons/detail/to-do-capture/mhfmejfcbgojopoeakmglpgmlokpdjjg',
   releaseUrl: `${repository}/releases/latest`,

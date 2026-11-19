@@ -75,11 +75,11 @@ test('unknown route returns an actual 404', async ({ page }) => {
 });
 
 /** 在隔离浏览器中模拟生产主机并拦截 Google 标签，验证隐私而不污染真实统计，喵~ */
-async function productionFixture(page, origin = site.origin) {
+async function productionFixture(page) {
   const googleRequests = [];
   await page.route('https://github.com/WayneGongCN/microsoft-todo-browser-ext', route => route.fulfill({ status: 204 }));
   await page.route('https://www.googletagmanager.com/**', route => { googleRequests.push(route.request().url()); return route.fulfill({ contentType: 'application/javascript', body: '/* intercepted in browser test */' }); });
-  await page.route(`${origin}/**`, async route => {
+  await page.route(`${site.origin}/**`, async route => {
     const path = new URL(route.request().url()).pathname;
     const file = resolve('dist', `.${path}${path.endsWith('/') ? 'index.html' : ''}`);
     const contentType = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml' }[extname(file)] || 'application/octet-stream';
@@ -114,13 +114,6 @@ test('analytics defaults to cookieless, sends one pageview and respects the save
   await page.getByRole('button', { name: 'Analytics preferences', exact: true }).click();
   await page.getByRole('button', { name: 'Turn on analytics', exact: true }).click();
   await expect.poll(() => requests.length).toBe(2);
-});
-
-test('the old production hostname also enables cookieless analytics by default', async ({ page }) => {
-  const legacyOrigin = `https://${site.legacyHostname}`;
-  const requests = await productionFixture(page, legacyOrigin);
-  await page.goto(`${legacyOrigin}/`);
-  await expect.poll(() => requests.length).toBe(1);
 });
 
 test('Global Privacy Control blocks a previously granted analytics preference', async ({ page }) => {

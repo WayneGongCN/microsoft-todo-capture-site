@@ -15,21 +15,16 @@ const scriptName = `site-${createHash('sha256').update(script).digest('hex').sli
 const style = await readFile('src/assets/site.css', 'utf8');
 const styleName = `site-${createHash('sha256').update(style).digest('hex').slice(0, 12)}.css`;
 await Promise.all([writeFile(`dist/assets/${analyticsName}`, analytics), writeFile(`dist/assets/${scriptName}`, script), writeFile(`dist/assets/${styleName}`, style)]);
-const isPreview = process.env.SITE_ENV === 'preview' || process.env.VERCEL_ENV === 'preview';
 
-/** 为静态资源加内容指纹，并防止预览版本进入搜索索引，喵~ */
+/** 为静态资源加内容指纹，喵~ */
 function finalize(html) {
-  const rendered = html.replace('/assets/site.css', `/assets/${styleName}`).replace('/assets/site.js', `/assets/${scriptName}`);
-  return isPreview ? rendered.replace('index,follow,max-image-preview:large', 'noindex,nofollow') : rendered;
+  return html.replace('/assets/site.css', `/assets/${styleName}`).replace('/assets/site.js', `/assets/${scriptName}`);
 }
 
 const homepage = finalize(renderHome('en'));
-const searchConsoleTags = [
-  'eYsxWjySciEsxiEG4SSBbKE7bfUw2b8333Xmwy-JADk', // Original Vercel hostname
-  'Zzgl3Cfgek6ttzuqPmvw62FWowAGBetMxpr4dnYwozc', // todo-ext.waynegong.com
-].map(token => `<meta name="google-site-verification" content="${token}">`).join('\n');
-const productionHomepage = process.env.SITE_ENV === 'production' || process.env.VERCEL_ENV === 'production'
-  ? homepage.replace('</head>', `${searchConsoleTags}\n</head>`)
+const searchConsoleTag = '<meta name="google-site-verification" content="Zzgl3Cfgek6ttzuqPmvw62FWowAGBetMxpr4dnYwozc">';
+const productionHomepage = process.env.SITE_ENV === 'production'
+  ? homepage.replace('</head>', `${searchConsoleTag}\n</head>`)
   : homepage;
 
 await Promise.all([
@@ -38,7 +33,7 @@ await Promise.all([
   writeFile('dist/privacy/index.html', finalize(renderPrivacy('en'))),
   writeFile('dist/zh/privacy/index.html', finalize(renderPrivacy('zh'))),
   writeFile('dist/404.html', finalize(renderNotFound())),
-  writeFile('dist/robots.txt', isPreview ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\nSitemap: ${site.origin}/sitemap.xml\n`),
+  writeFile('dist/robots.txt', `User-agent: *\nAllow: /\nSitemap: ${site.origin}/sitemap.xml\n`),
   writeFile('dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['/', '/zh/', '/privacy/', '/zh/privacy/'].map(path => `<url><loc>${site.origin}${path}</loc></url>`).join('')}</urlset>`),
   writeFile('dist/llms.txt', `# To Do Capture\n\nIndependent, open-source extension for Chrome and Edge that captures webpages, selected text and links into Microsoft To Do.\n\n- [Install from the Chrome Web Store](${site.chromeWebStoreUrl})\n- [Install from Microsoft Edge Add-ons](${site.edgeAddonsUrl})\n- [Download for manual installation](${site.releaseUrl})\n- [English homepage](${site.origin}/)\n- [中文首页](${site.origin}/zh/)\n- [Privacy policy](${site.origin}/privacy/)\n- [Extension source](${site.repository})\n- [Website source](${site.websiteRepository})\n`),
 ]);
