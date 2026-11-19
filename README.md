@@ -12,11 +12,11 @@ Every push to `main` runs the [Publish website workflow](.github/workflows/publi
 Configure these repository settings under **Settings → Secrets and variables → Actions**.
 
 - Set the `CLOUDFLARE_ACCOUNT_ID` Actions variable to the account that owns the Worker and the custom domain.
-- Set the `CLOUDFLARE_API_TOKEN` Actions secret to a token authorized to deploy the Worker and manage its custom domain.
+- Set the `CLOUDFLARE_API_TOKEN` Actions secret to a token authorized to deploy the existing Worker.
 
-[`wrangler.jsonc`](wrangler.jsonc) binds `todo-ext.waynegong.com` and serves `404.html` with HTTP 404 for missing paths. [`public/_headers`](public/_headers) sets the security and cache headers.
+The workflow uploads a Worker version and deploys it to 100% of traffic. Manage the production custom domain in Cloudflare. [`wrangler.jsonc`](wrangler.jsonc) records the domain and configures `404.html` for missing paths. [`public/_headers`](public/_headers) sets the security and cache headers.
 
-The primary domain is configured in [`src/config.mjs`](src/config.mjs) and used for canonical URLs, language alternates, Open Graph metadata, and the sitemap. If the domain changes, update that config and the Worker custom domain, then redeploy. Keep the Google Search Console verification tag in [`scripts/build.mjs`](scripts/build.mjs) and submit the new `/sitemap.xml` after verifying the new property. Bing Webmaster Tools can import the verified property from Search Console.
+The primary domain is configured in [`src/config.mjs`](src/config.mjs) and used for canonical URLs, language alternates, Open Graph metadata, and the sitemap. If the domain changes, update both repository configs and the custom domain in Cloudflare, then redeploy. Keep the Google Search Console verification tag in [`scripts/build.mjs`](scripts/build.mjs) and submit the new `/sitemap.xml` after verifying the new property. Bing Webmaster Tools can import the verified property from Search Console.
 
 ## Development
 
